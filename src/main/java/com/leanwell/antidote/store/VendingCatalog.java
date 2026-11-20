@@ -1,9 +1,10 @@
 package com.leanwell.antidote.store;
 
+import com.leanwell.antidote.config.AntidoteConfig;
+import com.leanwell.antidote.config.AntidoteConfigManager;
 import com.leanwell.antidote.item.AntidoteItem;
 import com.leanwell.antidote.item.DisabilityType;
 import com.leanwell.antidote.item.ModItems;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
 
@@ -20,7 +21,7 @@ public class VendingCatalog {
 
         int id = 0;
 
-        // 1. Finished Antidotes (1.5x ingredient cost: 48 Emeralds, 0 Diamonds)
+        // 1. Finished Antidotes (base 48 Emeralds, 0 Diamonds)
         for (DisabilityType type : DisabilityType.values()) {
             if (type == DisabilityType.GOD_ANTIDOTE) continue;
             AntidoteItem item = ModItems.get(type);
@@ -80,7 +81,7 @@ public class VendingCatalog {
         addIngredient(id++, Items.MILK_BUCKET, 32, "Lactose Intolerance Ingredient");
         addIngredient(id++, Items.SPYGLASS, 36, "Anosognosia Ingredient");
 
-        // 3. God Tier (Emeralds + Diamonds as requested)
+        // 3. God Tier (Emeralds + Diamonds)
         PRODUCTS.add(new VendingProduct(
             id++,
             Items.NETHER_STAR,
@@ -109,6 +110,10 @@ public class VendingCatalog {
         ));
 
         initialized = true;
+
+        if (AntidoteConfigManager.getConfig() != null) {
+            applyConfig(AntidoteConfigManager.getConfig());
+        }
     }
 
     private static void addIngredient(int id, ItemLike item, int emeraldCost, String desc) {
@@ -120,6 +125,36 @@ public class VendingCatalog {
             VendingProduct.Category.INGREDIENTS,
             desc
         ));
+    }
+
+    public static synchronized void applyConfig(AntidoteConfig config) {
+        if (!initialized) {
+            init();
+            return;
+        }
+
+        if (config == null) return;
+
+        for (VendingProduct p : PRODUCTS) {
+            switch (p.getCategory()) {
+                case ANTIDOTES -> {
+                    p.setCosts(config.getAntidoteEmeraldCost(), 0);
+                }
+                case INGREDIENTS -> {
+                    p.setCosts(config.calculateIngredientCost(p.getDefaultEmeraldCost()), 0);
+                }
+                case GOD_TIER -> {
+                    if (p.getItem() == ModItems.GOD_ANTIDOTE) {
+                        p.setCosts(config.getGodAntidoteEmeraldCost(), config.getGodAntidoteDiamondCost());
+                    } else {
+                        p.setCosts(
+                            config.calculateGodTierCost(p.getDefaultEmeraldCost()),
+                            config.calculateGodTierCost(p.getDefaultDiamondCost())
+                        );
+                    }
+                }
+            }
+        }
     }
 
     public static List<VendingProduct> getAll() {

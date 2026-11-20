@@ -347,11 +347,29 @@ public class MedicalVendingScreen extends AbstractContainerScreen<MedicalVending
 
             int invEm = this.minecraft != null && this.minecraft.player != null
                 ? MedicalVendingScreenHandler.countPlayerItem(this.minecraft.player, Items.EMERALD) : 0;
+            int invDia = this.minecraft != null && this.minecraft.player != null
+                ? MedicalVendingScreenHandler.countPlayerItem(this.minecraft.player, Items.DIAMOND) : 0;
             boolean isCreative = this.minecraft != null && this.minecraft.player != null
                 && this.minecraft.player.hasInfiniteMaterials();
 
+            VendingProduct matchingProduct = null;
+            for (VendingProduct p : VendingCatalog.getAll()) {
+                if (p.getItem() == selected.antidote()) {
+                    matchingProduct = p;
+                    break;
+                }
+            }
+
+            int reqEm = matchingProduct != null ? matchingProduct.getEmeraldCost() : 48;
+            int reqDia = matchingProduct != null ? matchingProduct.getDiamondCost() : 0;
+
             if (this.libraryBuyButton != null) {
-                this.libraryBuyButton.active = isCreative || (invEm >= 48);
+                String label = reqDia > 0 ? "Buy (" + reqEm + "E, " + reqDia + "D)" : "Buy (" + reqEm + "E)";
+                this.libraryBuyButton.setMessage(Component.literal(label));
+                int btnW = Math.max(66, this.font.width(label) + 14);
+                this.libraryBuyButton.setWidth(btnW);
+                this.libraryBuyButton.setX(this.leftPos + 242 - btnW);
+                this.libraryBuyButton.active = isCreative || (invEm >= reqEm && invDia >= reqDia);
             }
         }
     }

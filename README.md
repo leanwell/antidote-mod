@@ -34,13 +34,21 @@ The Medical Vending Machine (`antidote:medical_vending_machine`) is a 2-block ta
 
 ### Store Catalog & Pricing
 
-| Category | Offerings | Price |
+| Category | Offerings | Price (Default) |
 | :--- | :--- | :--- |
 | Raw Ingredients | Ghast Tear, Glistering Melon, Spyglass, Honey, Slimeball, etc. | 30 - 36 Emeralds |
-| Finished Antidotes | Any of the 30 standard condition antidotes | 48 Emeralds (1.5x ingredient cost) |
+| Finished Antidotes | Any of the 30 standard condition antidotes | 48 Emeralds |
 | God Tier | Nether Star | 100 Emeralds + 10 Diamonds |
 | God Tier | Totem of Undying | 120 Emeralds + 20 Diamonds |
 | God Tier | God Antidote (Full Cure-All) | 200 Emeralds + 20 Diamonds |
+
+### Configuration (`config/antidote.json`)
+
+Pricing can be customized and reloaded in real time via `.minecraft/config/antidote.json`:
+- **Standard Antidotes**: Adjust `baseEmeraldCost` and `priceMultiplier`.
+- **God Antidote**: Dedicated `baseEmeraldCost`, `baseDiamondCost`, and `priceMultiplier`.
+- **Ingredients & God Tier**: Adjust category-wide `priceMultiplier`.
+- **Admin Command**: In-game `/antidote reload` (requires OP) reloads configuration from disk and automatically synchronizes updated pricing to all connected clients.
 
 ## Antidote Reference & Recipes
 

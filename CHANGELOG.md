@@ -2,6 +2,22 @@
 
 All notable changes to Antidote are documented in this file.
 
+## [1.1.2] - 2026-11-20
+
+### Added
+- **Configurable Vending Pricing (`config/antidote.json`)**:
+  - Full configuration file support for adjusting pricing percentages and base costs.
+  - Dedicated configuration for the God Antidote (separate base Emerald cost, base Diamond cost, and percentage multiplier).
+  - Configurable percentage multipliers for Raw Ingredients and Other God Tier items (Nether Star, Totem of Undying).
+- **Multiplayer Network Synchronization**:
+  - Server automatically synchronizes pricing configuration to connected clients via a custom Fabric network packet (`antidote:sync_config`).
+- **Live In-Game Reload Command**:
+  - Added `/antidote reload` (requires OP / permission level 2) to reload `config/antidote.json` on the fly without server restart and broadcast the updated prices to all connected players.
+- **Dynamic Recipe Library Pricing**:
+  - The in-game Recipe Library buy button now dynamically displays exact multi-currency costs (e.g. `Buy (200E, 20D)` vs. `Buy (48E)`) and validates both Emerald and Diamond balances.
+
+---
+
 ## [1.1.1] - 2026-11-20
 
 ### Fixed
