@@ -85,7 +85,7 @@ public class MedicalVendingMachineBlock extends BaseEntityBlock {
 
     @Override
     public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
-        if (!level.isClientSide() && player.isCreative()) {
+        if (!level.isClientSide() && (player.preventsBlockDrops() || !player.hasCorrectToolForDrops(state))) {
             DoubleBlockHalf half = state.getValue(HALF);
             if (half == DoubleBlockHalf.UPPER) {
                 BlockPos belowPos = pos.below();

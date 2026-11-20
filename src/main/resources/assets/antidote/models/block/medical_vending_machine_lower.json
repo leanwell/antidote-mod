@@ -4,6 +4,6 @@
     "top": "antidote:block/medical_vending_machine_top",
     "bottom": "antidote:block/medical_vending_machine_bottom",
     "front": "antidote:block/medical_vending_machine_bottom_front",
-    "side": "antidote:block/medical_vending_machine_side"
+    "side": "antidote:block/medical_vending_machine_bottom_side"
   }
 }
