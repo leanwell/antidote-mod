@@ -2,19 +2,33 @@
 
 All notable changes to Antidote are documented in this file.
 
-## [1.1.2] - 2026-11-20
+## [1.1.2] - 2026-11-21
 
 ### Added
 - **Configurable Vending Pricing (`config/antidote.json`)**:
   - Full configuration file support for adjusting pricing percentages and base costs.
   - Dedicated configuration for the God Antidote (separate base Emerald cost, base Diamond cost, and percentage multiplier).
-  - Configurable percentage multipliers for Raw Ingredients and Other God Tier items (Nether Star, Totem of Undying).
+  - Configurable category base prices and percentage multipliers for Antidotes, Raw Ingredients, and Other God Tier items (Nether Star, Totem of Undying).
+- **In-Game Price Management Commands**:
+  - Added `/antidote price <category> emerald <cost>` and `/antidote price god diamond <cost>` to adjust base prices on the fly.
+  - Added `/antidote multiplier <category> <percentage>` to tweak percentage multipliers live.
+  - Added `/antidote reload` (requires OP / permission level 2) to reload `config/antidote.json` and sync with all players.
+- **Raid Victory Discount (Hero of the Village)**:
+  - Players bearing the Hero of the Village effect now receive dynamic discounts across the vending catalog (configurable discount per effect level, up to a configurable cap).
+  - Discount is visually applied to both the vending catalog and the Recipe Library buy interface.
 - **Multiplayer Network Synchronization**:
   - Server automatically synchronizes pricing configuration to connected clients via a custom Fabric network packet (`antidote:sync_config`).
-- **Live In-Game Reload Command**:
-  - Added `/antidote reload` (requires OP / permission level 2) to reload `config/antidote.json` on the fly without server restart and broadcast the updated prices to all connected players.
 - **Dynamic Recipe Library Pricing**:
   - The in-game Recipe Library buy button now dynamically displays exact multi-currency costs (e.g. `Buy (200E, 20D)` vs. `Buy (48E)`) and validates both Emerald and Diamond balances.
+
+### Changed
+- **Seamless Straight Side Texture**:
+  - Redesigned the 2-block side textures (`medical_vending_machine_top_side.png` and `medical_vending_machine_bottom_side.png`) into a single continuous straight panel.
+  - Removed the middle dividing seam and repetitive stacked symbols, making the block look like a sleek unified appliance. Front textures remain untouched.
+
+### Fixed
+- **Loot Table & Duplication Glitch**: Fixed double drop duplication glitch when broken with an iron pickaxe by migrating loot table condition to Minecraft 26.3 `minecraft:match_block` syntax.
+- **Hand Mining Drop Glitch**: Fixed the machine dropping an item entity when broken with bare hands or insufficient tools (wood/stone pickaxes) by checking tool harvest requirements in `playerWillDestroy()`.
 
 ---
 
