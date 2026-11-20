@@ -12,8 +12,12 @@ public record SyncConfigPayload(
     int godAntidoteBaseCost,
     int godAntidoteDiamondCost,
     double godAntidoteMultiplier,
+    int ingredientBaseCost,
     double ingredientMultiplier,
-    double godTierMultiplier
+    double godTierMultiplier,
+    boolean raidDiscountEnabled,
+    double discountPercentPerLevel,
+    double maxDiscountPercent
 ) implements CustomPacketPayload {
     public static final Type<SyncConfigPayload> TYPE = new Type<>(Antidote.id("sync_config"));
 
@@ -29,6 +33,10 @@ public record SyncConfigPayload(
             buf.readVarInt(),
             buf.readVarInt(),
             buf.readDouble(),
+            buf.readVarInt(),
+            buf.readDouble(),
+            buf.readDouble(),
+            buf.readBoolean(),
             buf.readDouble(),
             buf.readDouble()
         );
@@ -41,8 +49,12 @@ public record SyncConfigPayload(
             config.godAntidote != null ? config.godAntidote.baseEmeraldCost : 200,
             config.godAntidote != null ? config.godAntidote.baseDiamondCost : 20,
             config.godAntidote != null ? config.godAntidote.priceMultiplier : 1.0,
+            config.ingredients != null ? config.ingredients.baseEmeraldCost : 32,
             config.ingredients != null ? config.ingredients.priceMultiplier : 1.0,
-            config.godTierItems != null ? config.godTierItems.priceMultiplier : 1.0
+            config.godTierItems != null ? config.godTierItems.priceMultiplier : 1.0,
+            config.raidDiscount != null && config.raidDiscount.enabled,
+            config.raidDiscount != null ? config.raidDiscount.discountPercentPerLevel : 20.0,
+            config.raidDiscount != null ? config.raidDiscount.maxDiscountPercent : 60.0
         );
     }
 
@@ -53,8 +65,12 @@ public record SyncConfigPayload(
         config.godAntidote.baseEmeraldCost = this.godAntidoteBaseCost;
         config.godAntidote.baseDiamondCost = this.godAntidoteDiamondCost;
         config.godAntidote.priceMultiplier = this.godAntidoteMultiplier;
+        config.ingredients.baseEmeraldCost = this.ingredientBaseCost;
         config.ingredients.priceMultiplier = this.ingredientMultiplier;
         config.godTierItems.priceMultiplier = this.godTierMultiplier;
+        config.raidDiscount.enabled = this.raidDiscountEnabled;
+        config.raidDiscount.discountPercentPerLevel = this.discountPercentPerLevel;
+        config.raidDiscount.maxDiscountPercent = this.maxDiscountPercent;
         return config;
     }
 
@@ -64,8 +80,12 @@ public record SyncConfigPayload(
         buf.writeVarInt(godAntidoteBaseCost);
         buf.writeVarInt(godAntidoteDiamondCost);
         buf.writeDouble(godAntidoteMultiplier);
+        buf.writeVarInt(ingredientBaseCost);
         buf.writeDouble(ingredientMultiplier);
         buf.writeDouble(godTierMultiplier);
+        buf.writeBoolean(raidDiscountEnabled);
+        buf.writeDouble(discountPercentPerLevel);
+        buf.writeDouble(maxDiscountPercent);
     }
 
     @Override

@@ -76,10 +76,15 @@ public class MedicalVendingScreenHandler extends AbstractContainerMenu {
         int invEmeralds = countPlayerItem(player, Items.EMERALD);
         int invDiamonds = countPlayerItem(player, Items.DIAMOND);
 
-        if (isCreative || (invEmeralds >= product.getEmeraldCost() && invDiamonds >= product.getDiamondCost())) {
+        com.leanwell.antidote.config.AntidoteConfig config = com.leanwell.antidote.config.AntidoteConfigManager.getConfig();
+        double discount = config.getHeroDiscount(player);
+        int emeraldCost = config.getDiscountedEmeralds(product.getEmeraldCost(), discount);
+        int diamondCost = config.getDiscountedDiamonds(product.getDiamondCost(), discount);
+
+        if (isCreative || (invEmeralds >= emeraldCost && invDiamonds >= diamondCost)) {
             if (!isCreative) {
-                deductPlayerItem(player, Items.EMERALD, product.getEmeraldCost());
-                deductPlayerItem(player, Items.DIAMOND, product.getDiamondCost());
+                deductPlayerItem(player, Items.EMERALD, emeraldCost);
+                deductPlayerItem(player, Items.DIAMOND, diamondCost);
             }
 
             ItemStack productStack = product.getItemStack();

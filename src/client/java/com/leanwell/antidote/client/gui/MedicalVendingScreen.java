@@ -1,5 +1,7 @@
 package com.leanwell.antidote.client.gui;
 
+import com.leanwell.antidote.config.AntidoteConfig;
+import com.leanwell.antidote.config.AntidoteConfigManager;
 import com.leanwell.antidote.screen.MedicalVendingScreenHandler;
 import com.leanwell.antidote.store.MedicalLibrary;
 import com.leanwell.antidote.store.VendingCatalog;
@@ -196,6 +198,10 @@ public class MedicalVendingScreen extends AbstractContainerScreen<MedicalVending
         boolean isCreative = this.minecraft != null && this.minecraft.player != null
             && this.minecraft.player.hasInfiniteMaterials();
 
+        AntidoteConfig config = AntidoteConfigManager.getConfig();
+        double discount = this.minecraft != null && this.minecraft.player != null
+            ? config.getHeroDiscount(this.minecraft.player) : 0.0;
+
         for (int i = 0; i < CATALOG_COLS * CATALOG_ROWS; ++i) {
             int productIndex = startIndex + i;
             if (productIndex >= products.size()) break;
@@ -206,7 +212,9 @@ public class MedicalVendingScreen extends AbstractContainerScreen<MedicalVending
             int cellX = catalogX + 2 + col * CELL_SIZE;
             int cellY = catalogY + 2 + row * CELL_SIZE;
 
-            boolean canAfford = isCreative || (invEm >= product.getEmeraldCost() && invDia >= product.getDiamondCost());
+            int reqEm = config.getDiscountedEmeralds(product.getEmeraldCost(), discount);
+            int reqDia = config.getDiscountedDiamonds(product.getDiamondCost(), discount);
+            boolean canAfford = isCreative || (invEm >= reqEm && invDia >= reqDia);
             boolean isSelected = (productIndex == this.selectedStoreIndex);
 
             // Draw base slot box
@@ -268,7 +276,9 @@ public class MedicalVendingScreen extends AbstractContainerScreen<MedicalVending
             graphics.item(selectedProduct.getItemStack(), cardX + 7, cardY + 65);
 
             // Update Store Buy Button active status
-            boolean canAfford = isCreative || (invEm >= selectedProduct.getEmeraldCost() && invDia >= selectedProduct.getDiamondCost());
+            int emCost = config.getDiscountedEmeralds(selectedProduct.getEmeraldCost(), discount);
+            int diaCost = config.getDiscountedDiamonds(selectedProduct.getDiamondCost(), discount);
+            boolean canAfford = isCreative || (invEm >= emCost && invDia >= diaCost);
             if (this.storeBuyButton != null) {
                 this.storeBuyButton.active = canAfford;
             }
@@ -360,8 +370,14 @@ public class MedicalVendingScreen extends AbstractContainerScreen<MedicalVending
                 }
             }
 
-            int reqEm = matchingProduct != null ? matchingProduct.getEmeraldCost() : 48;
-            int reqDia = matchingProduct != null ? matchingProduct.getDiamondCost() : 0;
+            AntidoteConfig config = AntidoteConfigManager.getConfig();
+            double discount = this.minecraft != null && this.minecraft.player != null
+                ? config.getHeroDiscount(this.minecraft.player) : 0.0;
+
+            int rawEm = matchingProduct != null ? matchingProduct.getEmeraldCost() : 48;
+            int rawDia = matchingProduct != null ? matchingProduct.getDiamondCost() : 0;
+            int reqEm = config.getDiscountedEmeralds(rawEm, discount);
+            int reqDia = config.getDiscountedDiamonds(rawDia, discount);
 
             if (this.libraryBuyButton != null) {
                 String label = reqDia > 0 ? "Buy (" + reqEm + "E, " + reqDia + "D)" : "Buy (" + reqEm + "E)";
@@ -404,21 +420,31 @@ public class MedicalVendingScreen extends AbstractContainerScreen<MedicalVending
             }
 
             if (selectedProduct != null) {
-                // Header: item price info in black font without shadow
-                graphics.text(this.font, "Cost:", cardX + 6, cardY + 5, 0xFF000000, false);
+                AntidoteConfig config = AntidoteConfigManager.getConfig();
+                double discount = this.minecraft != null && this.minecraft.player != null
+                    ? config.getHeroDiscount(this.minecraft.player) : 0.0;
+                int emCost = config.getDiscountedEmeralds(selectedProduct.getEmeraldCost(), discount);
+                int diaCost = config.getDiscountedDiamonds(selectedProduct.getDiamondCost(), discount);
 
-                // Diamond cost text in black font without shadow
-                int diaCost = selectedProduct.getDiamondCost();
+                // Header: item price info with discount badge if active
+                if (discount > 0.0) {
+                    graphics.text(this.font, "Hero -" + Math.round(discount * 100) + "%", cardX + 6, cardY + 5, 0xFF008800, false);
+                } else {
+                    graphics.text(this.font, "Cost:", cardX + 6, cardY + 5, 0xFF000000, false);
+                }
+
+                // Diamond cost text
                 if (diaCost > 0) {
-                    graphics.text(this.font, "x " + diaCost, cardX + 28, cardY + 21, 0xFF000000, false);
+                    int color = (discount > 0.0 && diaCost < selectedProduct.getDiamondCost()) ? 0xFF008800 : 0xFF000000;
+                    graphics.text(this.font, "x " + diaCost, cardX + 28, cardY + 21, color, false);
                 } else {
                     graphics.text(this.font, "0 D", cardX + 28, cardY + 21, 0xFF000000, false);
                 }
 
-                // Emerald cost text in black font without shadow
-                int emCost = selectedProduct.getEmeraldCost();
+                // Emerald cost text
                 if (emCost > 0) {
-                    graphics.text(this.font, "x " + emCost, cardX + 28, cardY + 43, 0xFF000000, false);
+                    int color = (discount > 0.0 && emCost < selectedProduct.getEmeraldCost()) ? 0xFF008800 : 0xFF000000;
+                    graphics.text(this.font, "x " + emCost, cardX + 28, cardY + 43, color, false);
                 } else {
                     graphics.text(this.font, "0 E", cardX + 28, cardY + 43, 0xFF000000, false);
                 }
@@ -444,6 +470,12 @@ public class MedicalVendingScreen extends AbstractContainerScreen<MedicalVending
                 graphics.textWithWordWrap(this.font, Component.literal(selected.lore()), infoX + 6, infoY + 17, infoW - 12, 0xFF000000, false);
 
                 graphics.text(this.font, "Recipe:", infoX + 6, infoY + 36, 0xFF000000, false);
+                AntidoteConfig config = AntidoteConfigManager.getConfig();
+                double discount = this.minecraft != null && this.minecraft.player != null
+                    ? config.getHeroDiscount(this.minecraft.player) : 0.0;
+                if (discount > 0.0) {
+                    graphics.text(this.font, "(Hero -" + Math.round(discount * 100) + "%)", infoX + 48, infoY + 36, 0xFF008800, false);
+                }
 
                 int gridX = infoX + 8;
                 int gridY = infoY + 46;
