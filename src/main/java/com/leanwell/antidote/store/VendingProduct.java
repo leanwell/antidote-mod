@@ -1,6 +1,8 @@
 package com.leanwell.antidote.store;
 
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ItemLike;
 
 public class VendingProduct {
     public enum Category {
@@ -10,15 +12,15 @@ public class VendingProduct {
     }
 
     private final int id;
-    private final ItemStack itemStack;
+    private final Item item;
     private final int emeraldCost;
     private final int diamondCost;
     private final Category category;
     private final String description;
 
-    public VendingProduct(int id, ItemStack itemStack, int emeraldCost, int diamondCost, Category category, String description) {
+    public VendingProduct(int id, ItemLike itemLike, int emeraldCost, int diamondCost, Category category, String description) {
         this.id = id;
-        this.itemStack = itemStack;
+        this.item = itemLike.asItem();
         this.emeraldCost = emeraldCost;
         this.diamondCost = diamondCost;
         this.category = category;
@@ -29,8 +31,12 @@ public class VendingProduct {
         return id;
     }
 
+    public Item getItem() {
+        return item;
+    }
+
     public ItemStack getItemStack() {
-        return itemStack.copy();
+        return new ItemStack(item);
     }
 
     public int getEmeraldCost() {

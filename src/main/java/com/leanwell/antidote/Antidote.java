@@ -5,7 +5,6 @@ import com.leanwell.antidote.block.entity.ModBlockEntities;
 import com.leanwell.antidote.item.ModItemGroups;
 import com.leanwell.antidote.item.ModItems;
 import com.leanwell.antidote.screen.ModScreenHandlers;
-import com.leanwell.antidote.store.VendingCatalog;
 import com.leanwell.antidote.worldgen.VillageStructureModifier;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.resources.Identifier;
@@ -24,7 +23,6 @@ public class Antidote implements ModInitializer {
 		ModScreenHandlers.register();
 		ModItems.register();
 		ModItemGroups.register();
-		VendingCatalog.init();
 		VillageStructureModifier.register();
 		LOGGER.info("Antidote Mod initialized successfully.");
 	}

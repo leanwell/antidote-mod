@@ -4,8 +4,8 @@ import com.leanwell.antidote.item.AntidoteItem;
 import com.leanwell.antidote.item.DisabilityType;
 import com.leanwell.antidote.item.ModItems;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.ItemLike;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,7 +27,7 @@ public class VendingCatalog {
             if (item != null) {
                 PRODUCTS.add(new VendingProduct(
                     id++,
-                    new ItemStack(item),
+                    item,
                     48,
                     0,
                     VendingProduct.Category.ANTIDOTES,
@@ -83,7 +83,7 @@ public class VendingCatalog {
         // 3. God Tier (Emeralds + Diamonds as requested)
         PRODUCTS.add(new VendingProduct(
             id++,
-            new ItemStack(Items.NETHER_STAR),
+            Items.NETHER_STAR,
             100,
             10,
             VendingProduct.Category.GOD_TIER,
@@ -92,7 +92,7 @@ public class VendingCatalog {
 
         PRODUCTS.add(new VendingProduct(
             id++,
-            new ItemStack(Items.TOTEM_OF_UNDYING),
+            Items.TOTEM_OF_UNDYING,
             120,
             20,
             VendingProduct.Category.GOD_TIER,
@@ -101,7 +101,7 @@ public class VendingCatalog {
 
         PRODUCTS.add(new VendingProduct(
             id++,
-            new ItemStack(ModItems.GOD_ANTIDOTE),
+            ModItems.GOD_ANTIDOTE,
             200,
             20,
             VendingProduct.Category.GOD_TIER,
@@ -111,10 +111,10 @@ public class VendingCatalog {
         initialized = true;
     }
 
-    private static void addIngredient(int id, Item item, int emeraldCost, String desc) {
+    private static void addIngredient(int id, ItemLike item, int emeraldCost, String desc) {
         PRODUCTS.add(new VendingProduct(
             id,
-            new ItemStack(item),
+            item,
             emeraldCost,
             0,
             VendingProduct.Category.INGREDIENTS,
