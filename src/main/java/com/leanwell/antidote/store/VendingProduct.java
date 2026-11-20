@@ -21,6 +21,9 @@ public class VendingProduct {
     private final String description;
 
     public VendingProduct(int id, ItemLike itemLike, int emeraldCost, int diamondCost, Category category, String description) {
+        if (itemLike == null) {
+            throw new IllegalArgumentException("Cannot create VendingProduct with null ItemLike for id " + id + " (" + description + ")");
+        }
         this.id = id;
         this.item = itemLike.asItem();
         this.defaultEmeraldCost = emeraldCost;

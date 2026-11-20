@@ -129,7 +129,8 @@ public class VendingCatalog {
 
     public static synchronized void applyConfig(AntidoteConfig config) {
         if (!initialized) {
-            init();
+            // Lazy initialization: do not eagerly initialize before items and registries are bound.
+            // When init() runs lazily on first access, it will load AntidoteConfigManager.getConfig().
             return;
         }
 
