@@ -16,6 +16,31 @@ All credit for the Disabilities mod and its mechanics goes to OddSense.
 - Empty Bottle Recycling: Drinking an antidote returns an empty glass bottle to the player's inventory.
 - Visual & Audio Feedback: Consuming an antidote triggers particle bursts, sound cues, and an action bar confirmation message.
 - Dedicated Creative Tab: All 31 antidotes are neatly organized under the "Antidotes" creative tab.
+- Medical Vending Machine: An uncraftable, coin-operated medical station found naturally in village churches across all village biomes.
+
+## Medical Vending Machine & Economy
+
+The Medical Vending Machine (`antidote:medical_vending_machine`) is a 2-block tall medical station that provides an emergency healthcare economy for players in need of immediate cures or rare ingredients.
+
+### Mechanics & Structure Generation
+
+- Natural Spawning: Generates inside Village Churches across Plains, Desert, Savanna, Taiga, and Snowy biomes.
+- 2-Block Height: Functions as a true 2-block tall multi-block structure. Placing or breaking either half handles the counterpart cleanly.
+- Mining & Harvesting: Requires an Iron Pickaxe or higher tier to mine and collect. Mining with wooden or stone pickaxes will destroy the block without dropping it.
+- Direct Inventory Checkout: The machine scans your inventory directly for Emeralds and Diamonds. Clicking an item selects it in the transaction pane, where an explicit "Buy" button safely confirms your purchase.
+- Visual Affordability Highlights: Items display a green border when you have sufficient funds in your bag, or a red border with subtle red shading if you lack currency.
+- In-Game Recipe Library: Includes a dedicated "Library" tab displaying all 31 antidote crafting recipes, thematic lore descriptions, visual crafting grids, and direct checkout.
+- Mechanical Feedback: Audio cues accompany dispensing and coin deductions. Purchased items are placed directly into your inventory or safely dropped at your feet if your bag is full.
+
+### Store Catalog & Pricing
+
+| Category | Offerings | Price |
+| :--- | :--- | :--- |
+| Raw Ingredients | Ghast Tear, Glistering Melon, Spyglass, Honey, Slimeball, etc. | 30 - 36 Emeralds |
+| Finished Antidotes | Any of the 30 standard condition antidotes | 48 Emeralds (1.5x ingredient cost) |
+| God Tier | Nether Star | 100 Emeralds + 10 Diamonds |
+| God Tier | Totem of Undying | 120 Emeralds + 20 Diamonds |
+| God Tier | God Antidote (Full Cure-All) | 200 Emeralds + 20 Diamonds |
 
 ## Antidote Reference & Recipes
 

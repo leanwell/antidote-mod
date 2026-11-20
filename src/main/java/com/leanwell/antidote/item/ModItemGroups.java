@@ -1,6 +1,7 @@
 package com.leanwell.antidote.item;
 
 import com.leanwell.antidote.Antidote;
+import com.leanwell.antidote.block.ModBlocks;
 import net.fabricmc.fabric.api.creativetab.v1.FabricCreativeModeTab;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -19,6 +20,7 @@ public class ModItemGroups {
                 .icon(() -> new ItemStack(ModItems.GOD_ANTIDOTE))
                 .title(Component.translatable("itemGroup.antidote.antidotes"))
                 .displayItems((displayContext, entries) -> {
+                    entries.accept(ModBlocks.MEDICAL_VENDING_MACHINE_ITEM);
                     entries.accept(ModItems.GOD_ANTIDOTE);
                     for (AntidoteItem item : ModItems.getAll().values()) {
                         if (item != ModItems.GOD_ANTIDOTE) {

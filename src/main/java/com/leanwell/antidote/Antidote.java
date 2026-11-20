@@ -1,7 +1,11 @@
 package com.leanwell.antidote;
 
+import com.leanwell.antidote.block.ModBlocks;
+import com.leanwell.antidote.block.entity.ModBlockEntities;
 import com.leanwell.antidote.item.ModItemGroups;
 import com.leanwell.antidote.item.ModItems;
+import com.leanwell.antidote.screen.ModScreenHandlers;
+import com.leanwell.antidote.worldgen.VillageStructureModifier;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.resources.Identifier;
 import org.slf4j.Logger;
@@ -13,9 +17,13 @@ public class Antidote implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
-		LOGGER.info("Initializing Antidote Mod for Minecraft 26.3...");
+		LOGGER.info("Initializing Antidote Mod v1.1.0 for Minecraft 26.3...");
+		ModBlocks.register();
+		ModBlockEntities.register();
+		ModScreenHandlers.register();
 		ModItems.register();
 		ModItemGroups.register();
+		VillageStructureModifier.register();
 		LOGGER.info("Antidote Mod initialized successfully.");
 	}
 
