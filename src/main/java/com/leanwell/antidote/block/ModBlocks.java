@@ -17,6 +17,7 @@ public class ModBlocks {
     public static void register() {
         ResourceKey<Block> blockKey = ResourceKey.create(Registries.BLOCK, Antidote.id("medical_vending_machine"));
         BlockBehaviour.Properties properties = BlockBehaviour.Properties.of()
+            .setId(blockKey)
             .strength(3.5F, 6.0F)
             .requiresCorrectToolForDrops();
 
