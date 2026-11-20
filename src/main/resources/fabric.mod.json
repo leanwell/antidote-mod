@@ -1,0 +1,38 @@
+{
+	"schemaVersion": 1,
+	"id": "antidote",
+	"version": "${version}",
+	"name": "Antidote",
+	"description": "Antidote mod for Minecraft 26.3",
+	"authors": [
+		"Leanwell"
+	],
+	"contact": {
+		"homepage": "",
+		"sources": ""
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/antidote/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.leanwell.antidote.Antidote"
+		],
+		"client": [
+			"com.leanwell.antidote.client.AntidoteClient"
+		]
+	},
+	"mixins": [
+		"antidote.mixins.json",
+		{
+			"config": "antidote.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.20.1",
+		"minecraft": "~26.3",
+		"java": ">=25",
+		"fabric-api": "*"
+	}
+}
