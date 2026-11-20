@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable_with_bottom",
+  "textures": {
+    "top": "antidote:block/medical_vending_machine_top",
+    "bottom": "antidote:block/medical_vending_machine_bottom",
+    "front": "antidote:block/medical_vending_machine_front",
+    "side": "antidote:block/medical_vending_machine_side"
+  }
+}

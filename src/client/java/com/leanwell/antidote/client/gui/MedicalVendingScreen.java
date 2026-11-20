@@ -68,15 +68,6 @@ public class MedicalVendingScreen extends AbstractContainerScreen<MedicalVending
         this.addRenderableWidget(Button.builder(Component.literal("Library"), b -> {
             this.activeTab = ActiveTab.LIBRARY;
         }).bounds(this.leftPos + 178, tabY, 48, 16).build());
-
-        this.addRenderableWidget(Button.builder(Component.literal("Eject Coins"), b -> {
-            if (this.minecraft != null && this.minecraft.gameMode != null) {
-                this.minecraft.gameMode.handleInventoryButtonClick(
-                    this.menu.containerId,
-                    MedicalVendingScreenHandler.EJECT_BUTTON_ID
-                );
-            }
-        }).bounds(this.leftPos + 176, this.topPos + 96, 68, 18).build());
     }
 
     @Override
@@ -136,8 +127,6 @@ public class MedicalVendingScreen extends AbstractContainerScreen<MedicalVending
             ? MedicalVendingScreenHandler.countPlayerItem(this.minecraft.player, Items.EMERALD) : 0;
         int invDia = this.minecraft != null && this.minecraft.player != null
             ? MedicalVendingScreenHandler.countPlayerItem(this.minecraft.player, Items.DIAMOND) : 0;
-        int totalEm = this.menu.getEmeraldBuffer() + invEm;
-        int totalDia = this.menu.getDiamondBuffer() + invDia;
         boolean isCreative = this.minecraft != null && this.minecraft.player != null
             && this.minecraft.player.hasInfiniteMaterials();
 
@@ -151,34 +140,44 @@ public class MedicalVendingScreen extends AbstractContainerScreen<MedicalVending
             int cellX = catalogX + 2 + col * CELL_SIZE;
             int cellY = catalogY + 2 + row * CELL_SIZE;
 
-            boolean canAfford = isCreative || (totalEm >= product.getEmeraldCost() && totalDia >= product.getDiamondCost());
+            boolean canAfford = isCreative || (invEm >= product.getEmeraldCost() && invDia >= product.getDiamondCost());
 
-            // Draw slot box
+            // Draw base slot box
             drawRecessedSlot(graphics, cellX + 2, cellY + 2);
+
             if (canAfford) {
                 // Subtle green highlight border for affordable items
                 graphics.fill(RenderPipelines.GUI, cellX + 1, cellY + 1, cellX + 21, cellY + 2, 0xFF00AA00);
                 graphics.fill(RenderPipelines.GUI, cellX + 1, cellY + 20, cellX + 21, cellY + 21, 0xFF00AA00);
                 graphics.fill(RenderPipelines.GUI, cellX + 1, cellY + 1, cellX + 2, cellY + 21, 0xFF00AA00);
                 graphics.fill(RenderPipelines.GUI, cellX + 20, cellY + 1, cellX + 21, cellY + 21, 0xFF00AA00);
+            } else {
+                // RED highlight for lack of currency
+                graphics.fill(RenderPipelines.GUI, cellX + 1, cellY + 1, cellX + 21, cellY + 2, 0xFFAA0000);
+                graphics.fill(RenderPipelines.GUI, cellX + 1, cellY + 20, cellX + 21, cellY + 21, 0xFFAA0000);
+                graphics.fill(RenderPipelines.GUI, cellX + 1, cellY + 1, cellX + 2, cellY + 21, 0xFFAA0000);
+                graphics.fill(RenderPipelines.GUI, cellX + 20, cellY + 1, cellX + 21, cellY + 21, 0xFFAA0000);
+                // Subtle red tint over slot
+                graphics.fill(RenderPipelines.GUI, cellX + 2, cellY + 2, cellX + 20, cellY + 20, 0x28FF0000);
             }
 
             graphics.item(product.getItemStack(), cellX + 3, cellY + 3);
             graphics.itemDecorations(this.font, product.getItemStack(), cellX + 3, cellY + 3);
         }
 
-        // Right-Side Payment & Output Panel
-        drawRecessedSlot(graphics, left + 177, top + 41); // Slot 0: Emeralds (178, 42)
-        drawRecessedSlot(graphics, left + 213, top + 41); // Slot 1: Diamonds (214, 42)
-        drawRecessedSlot(graphics, left + 195, top + 69); // Slot 2: Output Chute (196, 70)
+        // Right-Side Wallet & Info Card
+        int cardX = left + 170;
+        int cardY = top + 36;
+        int cardW = 78;
+        int cardH = 92;
+        drawRecessedPanel(graphics, cardX, cardY, cardW, cardH);
 
-        // Ghost item previews if slots are empty
-        if (this.menu.getSlot(0).getItem().isEmpty()) {
-            graphics.item(new ItemStack(Items.EMERALD), left + 178, top + 42);
-        }
-        if (this.menu.getSlot(1).getItem().isEmpty()) {
-            graphics.item(new ItemStack(Items.DIAMOND), left + 214, top + 42);
-        }
+        // Currency Icons & Slot frames
+        drawRecessedSlot(graphics, cardX + 6, cardY + 16);
+        graphics.item(new ItemStack(Items.EMERALD), cardX + 7, cardY + 17);
+
+        drawRecessedSlot(graphics, cardX + 6, cardY + 38);
+        graphics.item(new ItemStack(Items.DIAMOND), cardX + 7, cardY + 39);
     }
 
     private void renderLibraryView(GuiGraphicsExtractor graphics, int left, int top, int mouseX, int mouseY) {
@@ -223,26 +222,6 @@ public class MedicalVendingScreen extends AbstractContainerScreen<MedicalVending
         if (this.selectedLibraryIndex >= 0 && this.selectedLibraryIndex < entries.size()) {
             MedicalLibrary.RecipeEntry selected = entries.get(this.selectedLibraryIndex);
 
-            // Display Title & Lore
-            graphics.textRenderer().accept(
-                infoX + 6,
-                infoY + 6,
-                Component.literal(selected.conditionName() + " Antidote").withStyle(ChatFormatting.DARK_AQUA, ChatFormatting.BOLD)
-            );
-
-            graphics.textRenderer().accept(
-                infoX + 6,
-                infoY + 18,
-                Component.literal(selected.lore()).withStyle(ChatFormatting.DARK_GRAY, ChatFormatting.ITALIC)
-            );
-
-            // Crafting Grid Title
-            graphics.textRenderer().accept(
-                infoX + 6,
-                infoY + 34,
-                Component.literal("Shapeless Recipe:").withStyle(ChatFormatting.GOLD)
-            );
-
             // Visual 2x2 Crafting Display
             int gridX = infoX + 8;
             int gridY = infoY + 46;
@@ -266,81 +245,70 @@ public class MedicalVendingScreen extends AbstractContainerScreen<MedicalVending
                 graphics.item(new ItemStack(selected.ingredients().get(2)), gridX + 1, gridY + 19);
             }
 
-            // Crafting Arrow -> Result
-            graphics.textRenderer().accept(
-                gridX + 44,
-                gridY + 14,
-                Component.literal("->").withStyle(ChatFormatting.DARK_GRAY, ChatFormatting.BOLD)
-            );
-
             int resultX = gridX + 66;
             int resultY = gridY + 10;
             drawRecessedSlot(graphics, resultX, resultY);
             graphics.item(new ItemStack(selected.antidote()), resultX + 1, resultY + 1);
-
-            // Quick Buy Notice
-            graphics.textRenderer().accept(
-                resultX + 24,
-                resultY + 4,
-                Component.literal("[Click to Buy]").withStyle(ChatFormatting.DARK_GREEN)
-            );
         }
     }
 
     @Override
     protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
-        graphics.textRenderer().accept(
-            this.titleLabelX,
-            this.titleLabelY,
-            this.title.copy().withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD)
-        );
+        // Title without shadow
+        graphics.text(this.font, "Medical Vending Machine", this.titleLabelX, this.titleLabelY, 0xFFFFAA00, false);
+
+        // Player Inventory title without shadow
+        graphics.text(this.font, "Inventory", this.inventoryLabelX, this.inventoryLabelY, 0xFF404040, false);
 
         int invEm = this.minecraft != null && this.minecraft.player != null
             ? MedicalVendingScreenHandler.countPlayerItem(this.minecraft.player, Items.EMERALD) : 0;
         int invDia = this.minecraft != null && this.minecraft.player != null
             ? MedicalVendingScreenHandler.countPlayerItem(this.minecraft.player, Items.DIAMOND) : 0;
 
-        graphics.textRenderer().accept(
-            this.inventoryLabelX,
-            this.inventoryLabelY,
-            Component.literal("Inventory (Bag: " + invEm + "E " + invDia + "D)").withStyle(ChatFormatting.DARK_GRAY)
-        );
-
         if (this.activeTab != ActiveTab.LIBRARY) {
-            int emCredit = this.menu.getEmeraldBuffer();
-            int diaCredit = this.menu.getDiamondBuffer();
+            // Right-side Wallet card text without shadow
+            int cardX = 170;
+            int cardY = 36;
 
-            // Deposit Header
-            graphics.textRenderer().accept(
-                174,
-                26,
-                Component.literal("Deposit:").withStyle(ChatFormatting.DARK_GRAY, ChatFormatting.BOLD)
-            );
+            graphics.text(this.font, "Your Wallet:", cardX + 6, cardY + 5, 0xFF333333, false);
+            graphics.text(this.font, "x " + invEm, cardX + 28, cardY + 21, 0xFF007700, false);
+            graphics.text(this.font, "x " + invDia, cardX + 28, cardY + 43, 0xFF0077AA, false);
 
-            // Emerald buffer text below slot 0
-            graphics.textRenderer().accept(
-                174,
-                59,
-                Component.literal("" + emCredit + "E").withStyle(ChatFormatting.DARK_GREEN, ChatFormatting.BOLD)
-            );
-
-            // Diamond buffer text below slot 1
-            graphics.textRenderer().accept(
-                210,
-                59,
-                Component.literal("" + diaCredit + "D").withStyle(ChatFormatting.AQUA, ChatFormatting.BOLD)
-            );
-
-            // Output chute label next to slot 2
-            graphics.textRenderer().accept(
-                174,
-                74,
-                Component.literal("Out:").withStyle(ChatFormatting.GOLD)
-            );
+            graphics.text(this.font, "Auto-Deduct", cardX + 6, cardY + 62, 0xFFFFAA00, false);
+            graphics.text(this.font, "Click to buy", cardX + 6, cardY + 74, 0xFF666666, false);
+            graphics.text(this.font, "from bag.", cardX + 6, cardY + 84, 0xFF666666, false);
 
             // Catalog item tooltips
             renderCatalogTooltips(graphics, mouseX, mouseY);
         } else {
+            // Library view text without shadow
+            int infoX = 64;
+            int infoY = 36;
+            List<MedicalLibrary.RecipeEntry> entries = MedicalLibrary.getEntries();
+
+            if (this.selectedLibraryIndex >= 0 && this.selectedLibraryIndex < entries.size()) {
+                MedicalLibrary.RecipeEntry selected = entries.get(this.selectedLibraryIndex);
+
+                String name = selected.conditionName();
+                String displayName = name.toLowerCase().endsWith("antidote") ? name : name + " Antidote";
+                graphics.text(this.font, displayName, infoX + 6, infoY + 6, 0xFF007788, false);
+                graphics.text(this.font, selected.lore(), infoX + 6, infoY + 18, 0xFF555555, false);
+                graphics.text(this.font, "Shapeless Recipe:", infoX + 6, infoY + 34, 0xFFFFAA00, false);
+
+                int gridX = infoX + 8;
+                int gridY = infoY + 46;
+                graphics.text(this.font, "->", gridX + 44, gridY + 14, 0xFF404040, false);
+
+                int resultX = gridX + 66;
+                int resultY = gridY + 10;
+                boolean canAfford = invEm >= 48;
+                if (canAfford) {
+                    graphics.text(this.font, "[Click to Buy (48E)]", resultX + 24, resultY + 5, 0xFF008800, false);
+                } else {
+                    graphics.text(this.font, "[Need " + (48 - invEm) + " more E]", resultX + 24, resultY + 5, 0xFFAA0000, false);
+                }
+            }
+
             renderLibraryTooltips(graphics, mouseX, mouseY);
         }
     }
@@ -364,8 +332,6 @@ public class MedicalVendingScreen extends AbstractContainerScreen<MedicalVending
             ? MedicalVendingScreenHandler.countPlayerItem(this.minecraft.player, Items.EMERALD) : 0;
         int invDia = this.minecraft != null && this.minecraft.player != null
             ? MedicalVendingScreenHandler.countPlayerItem(this.minecraft.player, Items.DIAMOND) : 0;
-        int totalEm = this.menu.getEmeraldBuffer() + invEm;
-        int totalDia = this.menu.getDiamondBuffer() + invDia;
         boolean isCreative = this.minecraft != null && this.minecraft.player != null
             && this.minecraft.player.hasInfiniteMaterials();
 
@@ -395,11 +361,11 @@ public class MedicalVendingScreen extends AbstractContainerScreen<MedicalVending
 
                 if (isCreative) {
                     tooltip.add(Component.literal("[Creative Mode - Click to Dispense]").withStyle(ChatFormatting.LIGHT_PURPLE));
-                } else if (totalEm >= product.getEmeraldCost() && totalDia >= product.getDiamondCost()) {
-                    tooltip.add(Component.literal("[Click to Purchase]").withStyle(ChatFormatting.GREEN));
+                } else if (invEm >= product.getEmeraldCost() && invDia >= product.getDiamondCost()) {
+                    tooltip.add(Component.literal("[Click to Purchase - Auto-Deducted]").withStyle(ChatFormatting.GREEN));
                 } else {
-                    int emShort = Math.max(0, product.getEmeraldCost() - totalEm);
-                    int diaShort = Math.max(0, product.getDiamondCost() - totalDia);
+                    int emShort = Math.max(0, product.getEmeraldCost() - invEm);
+                    int diaShort = Math.max(0, product.getDiamondCost() - invDia);
                     StringBuilder shortStr = new StringBuilder("Need ");
                     if (emShort > 0) shortStr.append(emShort).append(" more Emeralds");
                     if (diaShort > 0) {
