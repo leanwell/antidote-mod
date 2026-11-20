@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "minecraft:potion",
+    "minecraft:gold_nugget",
+    "minecraft:fermented_spider_eye"
+  ],
+  "result": {
+    "id": "antidote:schizophrenia_antidote"
+  }
+}

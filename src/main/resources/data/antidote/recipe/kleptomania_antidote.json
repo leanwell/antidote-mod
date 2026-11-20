@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "minecraft:potion",
+    "minecraft:chest",
+    "minecraft:gold_ingot"
+  ],
+  "result": {
+    "id": "antidote:kleptomania_antidote"
+  }
+}

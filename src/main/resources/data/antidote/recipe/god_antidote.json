@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "minecraft:potion",
+    "minecraft:nether_star",
+    "minecraft:totem_of_undying"
+  ],
+  "result": {
+    "id": "antidote:god_antidote"
+  }
+}

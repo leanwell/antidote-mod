@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "minecraft:potion",
+    "minecraft:white_wool",
+    "minecraft:sweet_berries"
+  ],
+  "result": {
+    "id": "antidote:insomnia_antidote"
+  }
+}

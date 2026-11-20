@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "minecraft:potion",
+    "minecraft:honey_bottle",
+    "minecraft:glow_berries"
+  ],
+  "result": {
+    "id": "antidote:seizures_antidote"
+  }
+}

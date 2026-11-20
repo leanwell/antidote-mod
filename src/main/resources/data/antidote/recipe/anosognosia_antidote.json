@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "minecraft:potion",
+    "minecraft:spyglass",
+    "minecraft:glowstone_dust"
+  ],
+  "result": {
+    "id": "antidote:anosognosia_antidote"
+  }
+}

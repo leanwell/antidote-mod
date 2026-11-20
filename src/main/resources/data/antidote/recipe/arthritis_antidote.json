@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "minecraft:potion",
+    "minecraft:magma_cream",
+    "minecraft:blaze_powder"
+  ],
+  "result": {
+    "id": "antidote:arthritis_antidote"
+  }
+}

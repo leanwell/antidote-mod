@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "minecraft:potion",
+    "minecraft:chest",
+    "minecraft:book"
+  ],
+  "result": {
+    "id": "antidote:dementia_antidote"
+  }
+}

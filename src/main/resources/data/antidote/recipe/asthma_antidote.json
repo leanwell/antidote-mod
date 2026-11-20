@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "minecraft:potion",
+    "minecraft:pufferfish",
+    "minecraft:feather"
+  ],
+  "result": {
+    "id": "antidote:asthma_antidote"
+  }
+}

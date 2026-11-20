@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "minecraft:potion",
+    "minecraft:glowstone_dust",
+    "minecraft:ink_sac"
+  ],
+  "result": {
+    "id": "antidote:color_blind_antidote"
+  }
+}

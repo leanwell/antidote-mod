@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "minecraft:potion",
+    "minecraft:bone_block",
+    "minecraft:iron_ingot"
+  ],
+  "result": {
+    "id": "antidote:brittle_bones_antidote"
+  }
+}

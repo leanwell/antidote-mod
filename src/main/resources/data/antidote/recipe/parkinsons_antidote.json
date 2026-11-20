@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "minecraft:potion",
+    "minecraft:sweet_berries",
+    "minecraft:iron_ingot"
+  ],
+  "result": {
+    "id": "antidote:parkinsons_antidote"
+  }
+}

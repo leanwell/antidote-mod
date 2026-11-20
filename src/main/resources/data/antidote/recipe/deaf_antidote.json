@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "minecraft:potion",
+    "minecraft:note_block",
+    "minecraft:white_wool"
+  ],
+  "result": {
+    "id": "antidote:deaf_antidote"
+  }
+}

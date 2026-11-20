@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "minecraft:potion",
+    "minecraft:milk_bucket",
+    "minecraft:apple"
+  ],
+  "result": {
+    "id": "antidote:lactose_intolerance_antidote"
+  }
+}

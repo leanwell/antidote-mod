@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "minecraft:potion",
+    "minecraft:carved_pumpkin",
+    "minecraft:glowstone_dust"
+  ],
+  "result": {
+    "id": "antidote:prosopagnosia_antidote"
+  }
+}

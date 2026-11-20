@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "minecraft:potion",
+    "minecraft:clock",
+    "minecraft:compass"
+  ],
+  "result": {
+    "id": "antidote:ocd_antidote"
+  }
+}

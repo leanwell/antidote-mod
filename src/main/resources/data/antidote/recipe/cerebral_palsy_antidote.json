@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "minecraft:potion",
+    "minecraft:honey_bottle",
+    "minecraft:slime_ball"
+  ],
+  "result": {
+    "id": "antidote:cerebral_palsy_antidote"
+  }
+}

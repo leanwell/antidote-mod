@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "minecraft:potion",
+    "minecraft:shield",
+    "minecraft:slime_ball"
+  ],
+  "result": {
+    "id": "antidote:amputated_offhand_antidote"
+  }
+}

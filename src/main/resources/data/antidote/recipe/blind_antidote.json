@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "minecraft:potion",
+    "minecraft:golden_carrot",
+    "minecraft:spider_eye"
+  ],
+  "result": {
+    "id": "antidote:blind_antidote"
+  }
+}
