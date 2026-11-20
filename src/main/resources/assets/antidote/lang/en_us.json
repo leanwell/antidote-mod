@@ -1,5 +1,8 @@
 {
   "itemGroup.antidote.antidotes": "Antidotes",
+  "item.antidote.medical_vending_machine": "Medical Vending Machine",
+  "block.antidote.medical_vending_machine": "Medical Vending Machine",
+  "container.antidote.medical_vending_machine": "Medical Vending Machine",
   "item.antidote.god_antidote": "God Antidote",
   "item.antidote.blind_antidote": "Blindness Antidote",
   "item.antidote.color_blind_antidote": "Color Blindness Antidote",
@@ -30,7 +33,5 @@
   "item.antidote.scoliosis_antidote": "Scoliosis Antidote",
   "item.antidote.kleptomania_antidote": "Kleptomania Antidote",
   "item.antidote.lactose_intolerance_antidote": "Lactose Intolerance Antidote",
-  "item.antidote.anosognosia_antidote": "Anosognosia Antidote",
-  "block.antidote.medical_vending_machine": "Medical Vending Machine",
-  "container.antidote.medical_vending_machine": "Medical Vending Machine"
+  "item.antidote.anosognosia_antidote": "Anosognosia Antidote"
 }

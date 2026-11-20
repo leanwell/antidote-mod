@@ -1,3 +1,6 @@
 {
-  "parent": "antidote:block/medical_vending_machine_lower"
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "antidote:item/medical_vending_machine"
+  }
 }

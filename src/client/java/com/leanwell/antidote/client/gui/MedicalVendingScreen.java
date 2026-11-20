@@ -31,10 +31,14 @@ public class MedicalVendingScreen extends AbstractContainerScreen<MedicalVending
     private int scrollOffset = 0;
     private int libraryScrollOffset = 0;
     private int selectedLibraryIndex = 0;
+    private int selectedStoreIndex = 0;
 
     private static final int CATALOG_COLS = 7;
     private static final int CATALOG_ROWS = 4;
     private static final int CELL_SIZE = 22;
+
+    private Button storeBuyButton;
+    private Button libraryBuyButton;
 
     public MedicalVendingScreen(MedicalVendingScreenHandler handler, Inventory inventory, Component title) {
         super(handler, inventory, title, 256, 230);
@@ -53,21 +57,83 @@ public class MedicalVendingScreen extends AbstractContainerScreen<MedicalVending
         this.addRenderableWidget(Button.builder(Component.literal("Antidotes"), b -> {
             this.activeTab = ActiveTab.ANTIDOTES;
             this.scrollOffset = 0;
+            this.selectedStoreIndex = 0;
+            updateButtonVisibility();
         }).bounds(this.leftPos + 8, tabY, 52, 16).build());
 
         this.addRenderableWidget(Button.builder(Component.literal("Ingredients"), b -> {
             this.activeTab = ActiveTab.INGREDIENTS;
             this.scrollOffset = 0;
+            this.selectedStoreIndex = 0;
+            updateButtonVisibility();
         }).bounds(this.leftPos + 62, tabY, 62, 16).build());
 
         this.addRenderableWidget(Button.builder(Component.literal("God Tier"), b -> {
             this.activeTab = ActiveTab.GOD_TIER;
             this.scrollOffset = 0;
+            this.selectedStoreIndex = 0;
+            updateButtonVisibility();
         }).bounds(this.leftPos + 126, tabY, 50, 16).build());
 
         this.addRenderableWidget(Button.builder(Component.literal("Library"), b -> {
             this.activeTab = ActiveTab.LIBRARY;
+            updateButtonVisibility();
         }).bounds(this.leftPos + 178, tabY, 48, 16).build());
+
+        // Store Buy Button in the right-side detail pane (next to selected item slot)
+        this.storeBuyButton = this.addRenderableWidget(Button.builder(Component.literal("Buy"), b -> {
+            buySelectedStoreItem();
+        }).bounds(this.leftPos + 198, this.topPos + 100, 44, 20).build());
+
+        // Library Buy Button in the recipe pane (next to recipe result slot)
+        this.libraryBuyButton = this.addRenderableWidget(Button.builder(Component.literal("Buy (48E)"), b -> {
+            buySelectedLibraryItem();
+        }).bounds(this.leftPos + 168, this.topPos + 92, 66, 20).build());
+
+        updateButtonVisibility();
+    }
+
+    private void updateButtonVisibility() {
+        boolean isLib = this.activeTab == ActiveTab.LIBRARY;
+        if (this.storeBuyButton != null) {
+            this.storeBuyButton.visible = !isLib;
+        }
+        if (this.libraryBuyButton != null) {
+            this.libraryBuyButton.visible = isLib;
+        }
+    }
+
+    private void buySelectedStoreItem() {
+        VendingProduct.Category cat = switch (this.activeTab) {
+            case INGREDIENTS -> VendingProduct.Category.INGREDIENTS;
+            case GOD_TIER -> VendingProduct.Category.GOD_TIER;
+            default -> VendingProduct.Category.ANTIDOTES;
+        };
+
+        List<VendingProduct> products = VendingCatalog.getByCategory(cat);
+        if (this.selectedStoreIndex >= 0 && this.selectedStoreIndex < products.size()) {
+            VendingProduct product = products.get(this.selectedStoreIndex);
+            if (this.minecraft != null && this.minecraft.gameMode != null) {
+                AbstractWidget.playButtonClickSound(this.minecraft.getSoundManager());
+                this.minecraft.gameMode.handleInventoryButtonClick(this.menu.containerId, product.getId());
+            }
+        }
+    }
+
+    private void buySelectedLibraryItem() {
+        List<MedicalLibrary.RecipeEntry> entries = MedicalLibrary.getEntries();
+        if (this.selectedLibraryIndex >= 0 && this.selectedLibraryIndex < entries.size()) {
+            MedicalLibrary.RecipeEntry selected = entries.get(this.selectedLibraryIndex);
+            for (VendingProduct p : VendingCatalog.getAll()) {
+                if (p.getItem() == selected.antidote()) {
+                    if (this.minecraft != null && this.minecraft.gameMode != null) {
+                        AbstractWidget.playButtonClickSound(this.minecraft.getSoundManager());
+                        this.minecraft.gameMode.handleInventoryButtonClick(this.menu.containerId, p.getId());
+                    }
+                    break;
+                }
+            }
+        }
     }
 
     @Override
@@ -141,11 +207,18 @@ public class MedicalVendingScreen extends AbstractContainerScreen<MedicalVending
             int cellY = catalogY + 2 + row * CELL_SIZE;
 
             boolean canAfford = isCreative || (invEm >= product.getEmeraldCost() && invDia >= product.getDiamondCost());
+            boolean isSelected = (productIndex == this.selectedStoreIndex);
 
             // Draw base slot box
             drawRecessedSlot(graphics, cellX + 2, cellY + 2);
 
-            if (canAfford) {
+            if (isSelected) {
+                // Gold highlight for the selected item
+                graphics.fill(RenderPipelines.GUI, cellX + 1, cellY + 1, cellX + 21, cellY + 2, 0xFFFFDF00);
+                graphics.fill(RenderPipelines.GUI, cellX + 1, cellY + 20, cellX + 21, cellY + 21, 0xFFFFDF00);
+                graphics.fill(RenderPipelines.GUI, cellX + 1, cellY + 1, cellX + 2, cellY + 21, 0xFFFFDF00);
+                graphics.fill(RenderPipelines.GUI, cellX + 20, cellY + 1, cellX + 21, cellY + 21, 0xFFFFDF00);
+            } else if (canAfford) {
                 // Subtle green highlight border for affordable items
                 graphics.fill(RenderPipelines.GUI, cellX + 1, cellY + 1, cellX + 21, cellY + 2, 0xFF00AA00);
                 graphics.fill(RenderPipelines.GUI, cellX + 1, cellY + 20, cellX + 21, cellY + 21, 0xFF00AA00);
@@ -157,7 +230,6 @@ public class MedicalVendingScreen extends AbstractContainerScreen<MedicalVending
                 graphics.fill(RenderPipelines.GUI, cellX + 1, cellY + 20, cellX + 21, cellY + 21, 0xFFAA0000);
                 graphics.fill(RenderPipelines.GUI, cellX + 1, cellY + 1, cellX + 2, cellY + 21, 0xFFAA0000);
                 graphics.fill(RenderPipelines.GUI, cellX + 20, cellY + 1, cellX + 21, cellY + 21, 0xFFAA0000);
-                // Subtle red tint over slot
                 graphics.fill(RenderPipelines.GUI, cellX + 2, cellY + 2, cellX + 20, cellY + 20, 0x28FF0000);
             }
 
@@ -165,19 +237,42 @@ public class MedicalVendingScreen extends AbstractContainerScreen<MedicalVending
             graphics.itemDecorations(this.font, product.getItemStack(), cellX + 3, cellY + 3);
         }
 
-        // Right-Side Wallet & Info Card
+        // Right-Side Transaction Pane
         int cardX = left + 170;
         int cardY = top + 36;
         int cardW = 78;
         int cardH = 92;
         drawRecessedPanel(graphics, cardX, cardY, cardW, cardH);
 
-        // Currency Icons & Slot frames
-        drawRecessedSlot(graphics, cardX + 6, cardY + 16);
-        graphics.item(new ItemStack(Items.EMERALD), cardX + 7, cardY + 17);
+        VendingProduct selectedProduct = null;
+        if (this.selectedStoreIndex >= 0 && this.selectedStoreIndex < products.size()) {
+            selectedProduct = products.get(this.selectedStoreIndex);
+        }
 
-        drawRecessedSlot(graphics, cardX + 6, cardY + 38);
-        graphics.item(new ItemStack(Items.DIAMOND), cardX + 7, cardY + 39);
+        if (selectedProduct != null) {
+            // Row 1: Diamond cost slot
+            drawRecessedSlot(graphics, cardX + 6, cardY + 16);
+            graphics.item(new ItemStack(Items.DIAMOND), cardX + 7, cardY + 17);
+
+            // Row 2: Emerald cost slot
+            drawRecessedSlot(graphics, cardX + 6, cardY + 38);
+            graphics.item(new ItemStack(Items.EMERALD), cardX + 7, cardY + 39);
+
+            // Row 3: Selected item slot
+            drawRecessedSlot(graphics, cardX + 6, cardY + 64);
+            // Gold border around selected preview
+            graphics.fill(RenderPipelines.GUI, cardX + 5, cardY + 63, cardX + 25, cardY + 64, 0xFFFFDF00);
+            graphics.fill(RenderPipelines.GUI, cardX + 5, cardY + 82, cardX + 25, cardY + 83, 0xFFFFDF00);
+            graphics.fill(RenderPipelines.GUI, cardX + 5, cardY + 63, cardX + 6, cardY + 83, 0xFFFFDF00);
+            graphics.fill(RenderPipelines.GUI, cardX + 24, cardY + 63, cardX + 25, cardY + 83, 0xFFFFDF00);
+            graphics.item(selectedProduct.getItemStack(), cardX + 7, cardY + 65);
+
+            // Update Store Buy Button active status
+            boolean canAfford = isCreative || (invEm >= selectedProduct.getEmeraldCost() && invDia >= selectedProduct.getDiamondCost());
+            if (this.storeBuyButton != null) {
+                this.storeBuyButton.active = canAfford;
+            }
+        }
     }
 
     private void renderLibraryView(GuiGraphicsExtractor graphics, int left, int top, int mouseX, int mouseY) {
@@ -204,8 +299,8 @@ public class MedicalVendingScreen extends AbstractContainerScreen<MedicalVending
                 // Gold highlight on selected item
                 graphics.fill(RenderPipelines.GUI, slotX, slotY, slotX + 18, slotY + 1, 0xFFFFDF00);
                 graphics.fill(RenderPipelines.GUI, slotX, slotY + 17, slotX + 18, slotY + 18, 0xFFFFDF00);
-                graphics.fill(RenderPipelines.GUI, slotX, slotY, slotX + 1, slotY + 18, 0xFFFFDF00);
-                graphics.fill(RenderPipelines.GUI, slotX + 17, slotY, slotX + 18, slotY + 18, 0xFFFFDF00);
+                graphics.fill(RenderPipelines.GUI, slotX, slotY + 1, slotX + 1, slotY + 17, 0xFFFFDF00);
+                graphics.fill(RenderPipelines.GUI, slotX + 17, slotY + 1, slotX + 18, slotY + 17, 0xFFFFDF00);
             }
 
             ItemStack stack = new ItemStack(entry.antidote());
@@ -249,6 +344,15 @@ public class MedicalVendingScreen extends AbstractContainerScreen<MedicalVending
             int resultY = gridY + 10;
             drawRecessedSlot(graphics, resultX, resultY);
             graphics.item(new ItemStack(selected.antidote()), resultX + 1, resultY + 1);
+
+            int invEm = this.minecraft != null && this.minecraft.player != null
+                ? MedicalVendingScreenHandler.countPlayerItem(this.minecraft.player, Items.EMERALD) : 0;
+            boolean isCreative = this.minecraft != null && this.minecraft.player != null
+                && this.minecraft.player.hasInfiniteMaterials();
+
+            if (this.libraryBuyButton != null) {
+                this.libraryBuyButton.active = isCreative || (invEm >= 48);
+            }
         }
     }
 
@@ -266,17 +370,43 @@ public class MedicalVendingScreen extends AbstractContainerScreen<MedicalVending
             ? MedicalVendingScreenHandler.countPlayerItem(this.minecraft.player, Items.DIAMOND) : 0;
 
         if (this.activeTab != ActiveTab.LIBRARY) {
-            // Right-side Wallet card text without shadow
             int cardX = 170;
             int cardY = 36;
 
-            graphics.text(this.font, "Your Wallet:", cardX + 6, cardY + 5, 0xFF333333, false);
-            graphics.text(this.font, "x " + invEm, cardX + 28, cardY + 21, 0xFF007700, false);
-            graphics.text(this.font, "x " + invDia, cardX + 28, cardY + 43, 0xFF0077AA, false);
+            VendingProduct.Category cat = switch (this.activeTab) {
+                case INGREDIENTS -> VendingProduct.Category.INGREDIENTS;
+                case GOD_TIER -> VendingProduct.Category.GOD_TIER;
+                default -> VendingProduct.Category.ANTIDOTES;
+            };
 
-            graphics.text(this.font, "Auto-Deduct", cardX + 6, cardY + 62, 0xFFFFAA00, false);
-            graphics.text(this.font, "Click to buy", cardX + 6, cardY + 74, 0xFF666666, false);
-            graphics.text(this.font, "from bag.", cardX + 6, cardY + 84, 0xFF666666, false);
+            List<VendingProduct> products = VendingCatalog.getByCategory(cat);
+            VendingProduct selectedProduct = null;
+            if (this.selectedStoreIndex >= 0 && this.selectedStoreIndex < products.size()) {
+                selectedProduct = products.get(this.selectedStoreIndex);
+            }
+
+            if (selectedProduct != null) {
+                // Header: item price info without shadow
+                graphics.text(this.font, "Cost:", cardX + 6, cardY + 5, 0xFF333333, false);
+
+                // Diamond cost text
+                int diaCost = selectedProduct.getDiamondCost();
+                if (diaCost > 0) {
+                    int col = (invDia >= diaCost) ? 0xFF0077AA : 0xFFAA0000;
+                    graphics.text(this.font, "x " + diaCost, cardX + 28, cardY + 21, col, false);
+                } else {
+                    graphics.text(this.font, "0 D", cardX + 28, cardY + 21, 0xFF888888, false);
+                }
+
+                // Emerald cost text
+                int emCost = selectedProduct.getEmeraldCost();
+                if (emCost > 0) {
+                    int col = (invEm >= emCost) ? 0xFF007700 : 0xFFAA0000;
+                    graphics.text(this.font, "x " + emCost, cardX + 28, cardY + 43, col, false);
+                } else {
+                    graphics.text(this.font, "0 E", cardX + 28, cardY + 43, 0xFF888888, false);
+                }
+            }
 
             // Catalog item tooltips
             renderCatalogTooltips(graphics, mouseX, mouseY);
@@ -298,15 +428,6 @@ public class MedicalVendingScreen extends AbstractContainerScreen<MedicalVending
                 int gridX = infoX + 8;
                 int gridY = infoY + 46;
                 graphics.text(this.font, "->", gridX + 44, gridY + 14, 0xFF404040, false);
-
-                int resultX = gridX + 66;
-                int resultY = gridY + 10;
-                boolean canAfford = invEm >= 48;
-                if (canAfford) {
-                    graphics.text(this.font, "[Click to Buy (48E)]", resultX + 24, resultY + 5, 0xFF008800, false);
-                } else {
-                    graphics.text(this.font, "[Need " + (48 - invEm) + " more E]", resultX + 24, resultY + 5, 0xFFAA0000, false);
-                }
             }
 
             renderLibraryTooltips(graphics, mouseX, mouseY);
@@ -360,9 +481,9 @@ public class MedicalVendingScreen extends AbstractContainerScreen<MedicalVending
                 tooltip.add(Component.literal(costStr.toString()).withStyle(ChatFormatting.GOLD));
 
                 if (isCreative) {
-                    tooltip.add(Component.literal("[Creative Mode - Click to Dispense]").withStyle(ChatFormatting.LIGHT_PURPLE));
+                    tooltip.add(Component.literal("[Creative Mode - Free]").withStyle(ChatFormatting.LIGHT_PURPLE));
                 } else if (invEm >= product.getEmeraldCost() && invDia >= product.getDiamondCost()) {
-                    tooltip.add(Component.literal("[Click to Purchase - Auto-Deducted]").withStyle(ChatFormatting.GREEN));
+                    tooltip.add(Component.literal("[Click to Select]").withStyle(ChatFormatting.GREEN));
                 } else {
                     int emShort = Math.max(0, product.getEmeraldCost() - invEm);
                     int diaShort = Math.max(0, product.getDiamondCost() - invDia);
@@ -457,27 +578,6 @@ public class MedicalVendingScreen extends AbstractContainerScreen<MedicalVending
                     return true;
                 }
             }
-
-            // Click result slot in Library to buy the selected antidote
-            if (this.selectedLibraryIndex >= 0 && this.selectedLibraryIndex < entries.size()) {
-                MedicalLibrary.RecipeEntry selected = entries.get(this.selectedLibraryIndex);
-                int gridX = left + 64 + 8;
-                int gridY = top + 36 + 46;
-                int resX = gridX + 66;
-                int resY = gridY + 10;
-
-                if (mouseX >= resX && mouseX <= resX + 18 && mouseY >= resY && mouseY <= resY + 18) {
-                    for (VendingProduct p : VendingCatalog.getAll()) {
-                        if (p.getItem() == selected.antidote()) {
-                            if (this.minecraft != null && this.minecraft.gameMode != null) {
-                                AbstractWidget.playButtonClickSound(this.minecraft.getSoundManager());
-                                this.minecraft.gameMode.handleInventoryButtonClick(this.menu.containerId, p.getId());
-                                return true;
-                            }
-                        }
-                    }
-                }
-            }
         } else {
             int catalogX = left + 8;
             int catalogY = top + 36;
@@ -494,18 +594,17 @@ public class MedicalVendingScreen extends AbstractContainerScreen<MedicalVending
                 int productIndex = startIndex + i;
                 if (productIndex >= products.size()) break;
 
-                VendingProduct product = products.get(productIndex);
                 int col = i % CATALOG_COLS;
                 int row = i / CATALOG_COLS;
                 int cellX = catalogX + 2 + col * CELL_SIZE;
                 int cellY = catalogY + 2 + row * CELL_SIZE;
 
                 if (mouseX >= cellX && mouseX < cellX + CELL_SIZE && mouseY >= cellY && mouseY < cellY + CELL_SIZE) {
-                    if (this.minecraft != null && this.minecraft.gameMode != null) {
+                    this.selectedStoreIndex = productIndex;
+                    if (this.minecraft != null) {
                         AbstractWidget.playButtonClickSound(this.minecraft.getSoundManager());
-                        this.minecraft.gameMode.handleInventoryButtonClick(this.menu.containerId, product.getId());
-                        return true;
                     }
+                    return true;
                 }
             }
         }
@@ -551,7 +650,6 @@ public class MedicalVendingScreen extends AbstractContainerScreen<MedicalVending
     }
 
     private void drawRecessedSlot(GuiGraphicsExtractor graphics, int x, int y) {
-        // Standard Minecraft 18x18 recessed slot box
         graphics.fill(RenderPipelines.GUI, x, y, x + 18, y + 1, 0xFF373737);
         graphics.fill(RenderPipelines.GUI, x, y, x + 1, y + 18, 0xFF373737);
         graphics.fill(RenderPipelines.GUI, x + 17, y, x + 18, y + 18, 0xFFFFFFFF);
