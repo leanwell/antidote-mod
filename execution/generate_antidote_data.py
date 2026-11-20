@@ -168,7 +168,7 @@ ANTIDOTES = [
         "id": "scoliosis_antidote",
         "name": "Scoliosis Antidote",
         "color": 0x556B2F,
-        "ingredients": ["minecraft:potion", "minecraft:bamboo", "minecraft:chain"]
+        "ingredients": ["minecraft:potion", "minecraft:bamboo", "minecraft:iron_chain"]
     },
     {
         "id": "kleptomania_antidote",
