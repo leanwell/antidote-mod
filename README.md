@@ -20,15 +20,17 @@ All credit for the Disabilities mod and its mechanics goes to OddSense.
 
 ## Medical Vending Machine & Economy
 
-The Medical Vending Machine (`antidote:medical_vending_machine`) provides an emergency healthcare economy for players in need of immediate cures or rare ingredients.
+The Medical Vending Machine (`antidote:medical_vending_machine`) is a 2-block tall medical station that provides an emergency healthcare economy for players in need of immediate cures or rare ingredients.
 
 ### Mechanics & Structure Generation
 
 - Natural Spawning: Generates inside Village Churches across Plains, Desert, Savanna, Taiga, and Snowy biomes.
+- 2-Block Height: Functions as a true 2-block tall multi-block structure. Placing or breaking either half handles the counterpart cleanly.
 - Mining & Harvesting: Requires an Iron Pickaxe or higher tier to mine and collect. Mining with wooden or stone pickaxes will destroy the block without dropping it.
-- Coin-Operated Buffer: Players deposit Emeralds and Diamonds into dedicated payment slots to accumulate credit balance, allowing transactions above single-stack limits.
-- Eject / Auto-Refund: Deposited currency is never lost; pressing "Eject Coins" or closing the screen immediately refunds all unspent Emeralds and Diamonds to the player's inventory.
-- Sound & Dispensing: Completing a purchase dispenses the item into an output chute and plays mechanical dispenser audio cues.
+- Direct Inventory Checkout: The machine scans your inventory directly for Emeralds and Diamonds. Clicking an item selects it in the transaction pane, where an explicit "Buy" button safely confirms your purchase.
+- Visual Affordability Highlights: Items display a green border when you have sufficient funds in your bag, or a red border with subtle red shading if you lack currency.
+- In-Game Recipe Library: Includes a dedicated "Library" tab displaying all 31 antidote crafting recipes, thematic lore descriptions, visual crafting grids, and direct checkout.
+- Mechanical Feedback: Audio cues accompany dispensing and coin deductions. Purchased items are placed directly into your inventory or safely dropped at your feet if your bag is full.
 
 ### Store Catalog & Pricing
 
