@@ -14,6 +14,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
@@ -24,6 +25,7 @@ public class MedicalVendingScreenHandler extends AbstractContainerMenu {
     private final ContainerData data;
     private int emeraldBuffer = 0;
     private int diamondBuffer = 0;
+    private boolean updatingBuffers = false;
 
     public MedicalVendingScreenHandler(int containerId, Inventory playerInventory) {
         this(containerId, playerInventory, ContainerLevelAccess.NULL);
@@ -32,7 +34,14 @@ public class MedicalVendingScreenHandler extends AbstractContainerMenu {
     public MedicalVendingScreenHandler(int containerId, Inventory playerInventory, ContainerLevelAccess access) {
         super(ModScreenHandlers.MEDICAL_VENDING, containerId);
         this.access = access;
-        this.container = new SimpleContainer(3);
+
+        this.container = new SimpleContainer(3) {
+            @Override
+            public void setChanged() {
+                super.setChanged();
+                MedicalVendingScreenHandler.this.slotsChanged(this);
+            }
+        };
 
         this.data = new ContainerData() {
             @Override
@@ -60,24 +69,24 @@ public class MedicalVendingScreenHandler extends AbstractContainerMenu {
 
         this.addDataSlots(this.data);
 
-        // Slot 0: Emerald Payment Slot
-        this.addSlot(new Slot(this.container, 0, 186, 34) {
+        // Slot 0: Emerald Payment Slot (x=178, y=42)
+        this.addSlot(new Slot(this.container, 0, 178, 42) {
             @Override
             public boolean mayPlace(ItemStack stack) {
                 return stack.is(Items.EMERALD);
             }
         });
 
-        // Slot 1: Diamond Payment Slot
-        this.addSlot(new Slot(this.container, 1, 186, 68) {
+        // Slot 1: Diamond Payment Slot (x=214, y=42)
+        this.addSlot(new Slot(this.container, 1, 214, 42) {
             @Override
             public boolean mayPlace(ItemStack stack) {
                 return stack.is(Items.DIAMOND);
             }
         });
 
-        // Slot 2: Output Chute Slot
-        this.addSlot(new Slot(this.container, 2, 222, 51) {
+        // Slot 2: Output Chute Slot (x=196, y=70)
+        this.addSlot(new Slot(this.container, 2, 196, 70) {
             @Override
             public boolean mayPlace(ItemStack stack) {
                 return false;
@@ -100,21 +109,59 @@ public class MedicalVendingScreenHandler extends AbstractContainerMenu {
     @Override
     public void slotsChanged(Container container) {
         super.slotsChanged(container);
+        if (updatingBuffers) return;
 
-        ItemStack emeraldStack = this.getSlot(0).getItem();
-        if (!emeraldStack.isEmpty() && emeraldStack.is(Items.EMERALD)) {
-            int count = emeraldStack.getCount();
-            this.emeraldBuffer += count;
-            this.getSlot(0).set(ItemStack.EMPTY);
-            this.broadcastChanges();
+        try {
+            updatingBuffers = true;
+            boolean changed = false;
+
+            ItemStack emeraldStack = this.getSlot(0).getItem();
+            if (!emeraldStack.isEmpty() && emeraldStack.is(Items.EMERALD)) {
+                this.emeraldBuffer += emeraldStack.getCount();
+                this.getSlot(0).set(ItemStack.EMPTY);
+                changed = true;
+            }
+
+            ItemStack diamondStack = this.getSlot(1).getItem();
+            if (!diamondStack.isEmpty() && diamondStack.is(Items.DIAMOND)) {
+                this.diamondBuffer += diamondStack.getCount();
+                this.getSlot(1).set(ItemStack.EMPTY);
+                changed = true;
+            }
+
+            if (changed) {
+                this.broadcastChanges();
+            }
+        } finally {
+            updatingBuffers = false;
         }
+    }
 
-        ItemStack diamondStack = this.getSlot(1).getItem();
-        if (!diamondStack.isEmpty() && diamondStack.is(Items.DIAMOND)) {
-            int count = diamondStack.getCount();
-            this.diamondBuffer += count;
-            this.getSlot(1).set(ItemStack.EMPTY);
-            this.broadcastChanges();
+    public static int countPlayerItem(Player player, Item item) {
+        if (player == null) return 0;
+        int count = 0;
+        Inventory inv = player.getInventory();
+        for (int i = 0; i < inv.getContainerSize(); ++i) {
+            ItemStack stack = inv.getItem(i);
+            if (!stack.isEmpty() && stack.is(item)) {
+                count += stack.getCount();
+            }
+        }
+        return count;
+    }
+
+    public static void deductPlayerItem(Player player, Item item, int amount) {
+        if (player == null || amount <= 0) return;
+        int remaining = amount;
+        Inventory inv = player.getInventory();
+        for (int i = 0; i < inv.getContainerSize(); ++i) {
+            ItemStack stack = inv.getItem(i);
+            if (!stack.isEmpty() && stack.is(item)) {
+                int take = Math.min(stack.getCount(), remaining);
+                stack.shrink(take);
+                remaining -= take;
+                if (remaining <= 0) break;
+            }
         }
     }
 
@@ -128,34 +175,60 @@ public class MedicalVendingScreenHandler extends AbstractContainerMenu {
         VendingProduct product = VendingCatalog.get(id);
         if (product == null) return false;
 
-        if (this.emeraldBuffer >= product.getEmeraldCost() && this.diamondBuffer >= product.getDiamondCost()) {
+        boolean isCreative = player.hasInfiniteMaterials();
+        int invEmeralds = countPlayerItem(player, Items.EMERALD);
+        int invDiamonds = countPlayerItem(player, Items.DIAMOND);
+        int totalEmeralds = this.emeraldBuffer + invEmeralds;
+        int totalDiamonds = this.diamondBuffer + invDiamonds;
+
+        if (isCreative || (totalEmeralds >= product.getEmeraldCost() && totalDiamonds >= product.getDiamondCost())) {
+            if (!isCreative) {
+                int emNeeded = product.getEmeraldCost();
+                int fromEmBuffer = Math.min(this.emeraldBuffer, emNeeded);
+                this.emeraldBuffer -= fromEmBuffer;
+                emNeeded -= fromEmBuffer;
+                if (emNeeded > 0) {
+                    deductPlayerItem(player, Items.EMERALD, emNeeded);
+                }
+
+                int diaNeeded = product.getDiamondCost();
+                int fromDiaBuffer = Math.min(this.diamondBuffer, diaNeeded);
+                this.diamondBuffer -= fromDiaBuffer;
+                diaNeeded -= fromDiaBuffer;
+                if (diaNeeded > 0) {
+                    deductPlayerItem(player, Items.DIAMOND, diaNeeded);
+                }
+            }
+
             Slot outputSlot = this.getSlot(2);
             ItemStack currentOutput = outputSlot.getItem();
             ItemStack productStack = product.getItemStack();
 
             if (currentOutput.isEmpty()) {
-                this.emeraldBuffer -= product.getEmeraldCost();
-                this.diamondBuffer -= product.getDiamondCost();
                 outputSlot.set(productStack);
-                this.broadcastChanges();
-                playDispenseAudio(player);
-                return true;
             } else if (ItemStack.isSameItemSameComponents(currentOutput, productStack)
                 && currentOutput.getCount() + productStack.getCount() <= currentOutput.getMaxStackSize()) {
-                this.emeraldBuffer -= product.getEmeraldCost();
-                this.diamondBuffer -= product.getDiamondCost();
                 currentOutput.grow(productStack.getCount());
                 outputSlot.set(currentOutput);
-                this.broadcastChanges();
-                playDispenseAudio(player);
-                return true;
+            } else {
+                if (!player.getInventory().add(productStack)) {
+                    player.level().addFreshEntity(new ItemEntity(
+                        player.level(), player.getX(), player.getY(), player.getZ(), productStack
+                    ));
+                }
             }
+
+            this.broadcastChanges();
+            playDispenseAudio(player);
+            return true;
         }
 
         return false;
     }
 
     public void ejectCoins(Player player) {
+        if (player.level().isClientSide()) return;
+
         while (this.emeraldBuffer > 0) {
             int count = Math.min(this.emeraldBuffer, 64);
             this.emeraldBuffer -= count;
