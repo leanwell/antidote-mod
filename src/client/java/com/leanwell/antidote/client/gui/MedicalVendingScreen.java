@@ -358,11 +358,11 @@ public class MedicalVendingScreen extends AbstractContainerScreen<MedicalVending
 
     @Override
     protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
-        // Title without shadow
-        graphics.text(this.font, "Medical Vending Machine", this.titleLabelX, this.titleLabelY, 0xFFFFAA00, false);
+        // Title in black font without shadow
+        graphics.text(this.font, "Medical Vending Machine", this.titleLabelX, this.titleLabelY, 0xFF000000, false);
 
-        // Player Inventory title without shadow
-        graphics.text(this.font, "Inventory", this.inventoryLabelX, this.inventoryLabelY, 0xFF404040, false);
+        // Player Inventory title in black font without shadow
+        graphics.text(this.font, "Inventory", this.inventoryLabelX, this.inventoryLabelY, 0xFF000000, false);
 
         int invEm = this.minecraft != null && this.minecraft.player != null
             ? MedicalVendingScreenHandler.countPlayerItem(this.minecraft.player, Items.EMERALD) : 0;
@@ -386,34 +386,33 @@ public class MedicalVendingScreen extends AbstractContainerScreen<MedicalVending
             }
 
             if (selectedProduct != null) {
-                // Header: item price info without shadow
-                graphics.text(this.font, "Cost:", cardX + 6, cardY + 5, 0xFF333333, false);
+                // Header: item price info in black font without shadow
+                graphics.text(this.font, "Cost:", cardX + 6, cardY + 5, 0xFF000000, false);
 
-                // Diamond cost text
+                // Diamond cost text in black font without shadow
                 int diaCost = selectedProduct.getDiamondCost();
                 if (diaCost > 0) {
-                    int col = (invDia >= diaCost) ? 0xFF0077AA : 0xFFAA0000;
-                    graphics.text(this.font, "x " + diaCost, cardX + 28, cardY + 21, col, false);
+                    graphics.text(this.font, "x " + diaCost, cardX + 28, cardY + 21, 0xFF000000, false);
                 } else {
-                    graphics.text(this.font, "0 D", cardX + 28, cardY + 21, 0xFF888888, false);
+                    graphics.text(this.font, "0 D", cardX + 28, cardY + 21, 0xFF000000, false);
                 }
 
-                // Emerald cost text
+                // Emerald cost text in black font without shadow
                 int emCost = selectedProduct.getEmeraldCost();
                 if (emCost > 0) {
-                    int col = (invEm >= emCost) ? 0xFF007700 : 0xFFAA0000;
-                    graphics.text(this.font, "x " + emCost, cardX + 28, cardY + 43, col, false);
+                    graphics.text(this.font, "x " + emCost, cardX + 28, cardY + 43, 0xFF000000, false);
                 } else {
-                    graphics.text(this.font, "0 E", cardX + 28, cardY + 43, 0xFF888888, false);
+                    graphics.text(this.font, "0 E", cardX + 28, cardY + 43, 0xFF000000, false);
                 }
             }
 
             // Catalog item tooltips
             renderCatalogTooltips(graphics, mouseX, mouseY);
         } else {
-            // Library view text without shadow
+            // Library view text in black font without shadow
             int infoX = 64;
             int infoY = 36;
+            int infoW = 184;
             List<MedicalLibrary.RecipeEntry> entries = MedicalLibrary.getEntries();
 
             if (this.selectedLibraryIndex >= 0 && this.selectedLibraryIndex < entries.size()) {
@@ -421,13 +420,16 @@ public class MedicalVendingScreen extends AbstractContainerScreen<MedicalVending
 
                 String name = selected.conditionName();
                 String displayName = name.toLowerCase().endsWith("antidote") ? name : name + " Antidote";
-                graphics.text(this.font, displayName, infoX + 6, infoY + 6, 0xFF007788, false);
-                graphics.text(this.font, selected.lore(), infoX + 6, infoY + 18, 0xFF555555, false);
-                graphics.text(this.font, "Shapeless Recipe:", infoX + 6, infoY + 34, 0xFFFFAA00, false);
+                graphics.text(this.font, displayName, infoX + 6, infoY + 6, 0xFF000000, false);
+
+                // Word wrap lore so it never clips out of the UI panel
+                graphics.textWithWordWrap(this.font, Component.literal(selected.lore()), infoX + 6, infoY + 17, infoW - 12, 0xFF000000, false);
+
+                graphics.text(this.font, "Recipe:", infoX + 6, infoY + 36, 0xFF000000, false);
 
                 int gridX = infoX + 8;
                 int gridY = infoY + 46;
-                graphics.text(this.font, "->", gridX + 44, gridY + 14, 0xFF404040, false);
+                graphics.text(this.font, "->", gridX + 44, gridY + 14, 0xFF000000, false);
             }
 
             renderLibraryTooltips(graphics, mouseX, mouseY);
