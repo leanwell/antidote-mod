@@ -33,12 +33,10 @@ public class GodAntidoteItem extends AntidoteItem {
             CommandSourceStack source = server.createCommandSourceStack()
                 .withSuppressedOutput();
 
-            // Perform full disability reset & remove all
             server.getCommands().performPrefixedCommand(source, "disability reset");
             server.getCommands().performPrefixedCommand(source,
                 "disability remove " + player.getName().getString() + " all");
 
-            // Legendary totem particles & sound
             serverLevel.sendParticles(ParticleTypes.TOTEM_OF_UNDYING,
                 player.getX(), player.getY() + 1.0, player.getZ(),
                 40, 0.5, 0.8, 0.5, 0.2);

@@ -50,11 +50,9 @@ public class AntidoteItem extends Item {
             CommandSourceStack source = server.createCommandSourceStack()
                 .withSuppressedOutput();
 
-            // Execute the disability removal command silently
             server.getCommands().performPrefixedCommand(source,
                 "disability remove " + player.getName().getString() + " " + disabilityType.getId());
 
-            // Particles and sounds
             serverLevel.sendParticles(ParticleTypes.HAPPY_VILLAGER,
                 player.getX(), player.getY() + 1.0, player.getZ(),
                 15, 0.5, 0.5, 0.5, 0.1);

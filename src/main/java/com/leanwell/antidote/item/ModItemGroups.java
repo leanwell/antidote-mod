@@ -19,9 +19,7 @@ public class ModItemGroups {
                 .icon(() -> new ItemStack(ModItems.GOD_ANTIDOTE))
                 .title(Component.translatable("itemGroup.antidote.antidotes"))
                 .displayItems((displayContext, entries) -> {
-                    // Add God Antidote at the top
                     entries.accept(ModItems.GOD_ANTIDOTE);
-                    // Add all specific condition antidotes
                     for (AntidoteItem item : ModItems.getAll().values()) {
                         if (item != ModItems.GOD_ANTIDOTE) {
                             entries.accept(item);

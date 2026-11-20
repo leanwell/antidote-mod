@@ -3,15 +3,16 @@
 	"id": "antidote",
 	"version": "${version}",
 	"name": "Antidote",
-	"description": "Antidote mod for Minecraft 26.3",
+	"description": "An addon for the Disabilities mod by OddSense. Introduces 30 condition-specific craftable antidotes and a God Antidote to cure all active conditions and reset the timer. Notice: This mod requires the Disabilities mod to function.",
 	"authors": [
 		"Leanwell"
 	],
 	"contact": {
-		"homepage": "",
-		"sources": ""
+		"homepage": "https://modrinth.com/mod/disabilities",
+		"sources": "https://github.com/leanwell/antidote-mod",
+		"issues": "https://github.com/leanwell/antidote-mod/issues"
 	},
-	"license": "CC0-1.0",
+	"license": "GPL-3.0",
 	"icon": "assets/antidote/icon.png",
 	"environment": "*",
 	"entrypoints": {
@@ -22,17 +23,11 @@
 			"com.leanwell.antidote.client.AntidoteClient"
 		]
 	},
-	"mixins": [
-		"antidote.mixins.json",
-		{
-			"config": "antidote.client.mixins.json",
-			"environment": "client"
-		}
-	],
 	"depends": {
 		"fabricloader": ">=0.20.1",
 		"minecraft": "~26.3",
 		"java": ">=25",
-		"fabric-api": "*"
+		"fabric-api": "*",
+		"disabilities": ">=0.5.0"
 	}
 }

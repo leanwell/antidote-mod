@@ -43,3 +43,4 @@ replay_*.log
 __pycache__/
 *.pyc
 .tmp/
+execution/

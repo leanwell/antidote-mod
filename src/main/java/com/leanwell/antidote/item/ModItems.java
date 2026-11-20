@@ -24,11 +24,9 @@ public class ModItems {
     }
 
     public static void register() {
-        // Register God Antidote first
         GOD_ANTIDOTE = registerItem("god_antidote", GodAntidoteItem::new);
         ANTIDOTES.put(DisabilityType.GOD_ANTIDOTE, GOD_ANTIDOTE);
 
-        // Register all specific condition antidotes
         for (DisabilityType type : DisabilityType.values()) {
             if (type == DisabilityType.GOD_ANTIDOTE) continue;
 
