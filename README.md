@@ -16,6 +16,29 @@ All credit for the Disabilities mod and its mechanics goes to OddSense.
 - Empty Bottle Recycling: Drinking an antidote returns an empty glass bottle to the player's inventory.
 - Visual & Audio Feedback: Consuming an antidote triggers particle bursts, sound cues, and an action bar confirmation message.
 - Dedicated Creative Tab: All 31 antidotes are neatly organized under the "Antidotes" creative tab.
+- Medical Vending Machine: An uncraftable, coin-operated medical station found naturally in village churches across all village biomes.
+
+## Medical Vending Machine & Economy
+
+The Medical Vending Machine (`antidote:medical_vending_machine`) provides an emergency healthcare economy for players in need of immediate cures or rare ingredients.
+
+### Mechanics & Structure Generation
+
+- Natural Spawning: Generates inside Village Churches across Plains, Desert, Savanna, Taiga, and Snowy biomes.
+- Mining & Harvesting: Requires an Iron Pickaxe or higher tier to mine and collect. Mining with wooden or stone pickaxes will destroy the block without dropping it.
+- Coin-Operated Buffer: Players deposit Emeralds and Diamonds into dedicated payment slots to accumulate credit balance, allowing transactions above single-stack limits.
+- Eject / Auto-Refund: Deposited currency is never lost; pressing "Eject Coins" or closing the screen immediately refunds all unspent Emeralds and Diamonds to the player's inventory.
+- Sound & Dispensing: Completing a purchase dispenses the item into an output chute and plays mechanical dispenser audio cues.
+
+### Store Catalog & Pricing
+
+| Category | Offerings | Price |
+| :--- | :--- | :--- |
+| Raw Ingredients | Ghast Tear, Glistering Melon, Spyglass, Honey, Slimeball, etc. | 30 - 36 Emeralds |
+| Finished Antidotes | Any of the 30 standard condition antidotes | 48 Emeralds (1.5x ingredient cost) |
+| God Tier | Nether Star | 100 Emeralds + 10 Diamonds |
+| God Tier | Totem of Undying | 120 Emeralds + 20 Diamonds |
+| God Tier | God Antidote (Full Cure-All) | 200 Emeralds + 20 Diamonds |
 
 ## Antidote Reference & Recipes
 

@@ -30,5 +30,7 @@
   "item.antidote.scoliosis_antidote": "Scoliosis Antidote",
   "item.antidote.kleptomania_antidote": "Kleptomania Antidote",
   "item.antidote.lactose_intolerance_antidote": "Lactose Intolerance Antidote",
-  "item.antidote.anosognosia_antidote": "Anosognosia Antidote"
+  "item.antidote.anosognosia_antidote": "Anosognosia Antidote",
+  "block.antidote.medical_vending_machine": "Medical Vending Machine",
+  "container.antidote.medical_vending_machine": "Medical Vending Machine"
 }
