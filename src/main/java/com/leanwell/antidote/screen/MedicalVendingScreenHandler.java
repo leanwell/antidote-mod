@@ -7,12 +7,12 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.ContainerLevelAccess;
-import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -61,7 +61,7 @@ public class MedicalVendingScreenHandler extends AbstractContainerMenu {
         this.addDataSlots(this.data);
 
         // Slot 0: Emerald Payment Slot
-        this.addSlot(new Slot(this.container, 0, 186, 28) {
+        this.addSlot(new Slot(this.container, 0, 186, 34) {
             @Override
             public boolean mayPlace(ItemStack stack) {
                 return stack.is(Items.EMERALD);
@@ -69,7 +69,7 @@ public class MedicalVendingScreenHandler extends AbstractContainerMenu {
         });
 
         // Slot 1: Diamond Payment Slot
-        this.addSlot(new Slot(this.container, 1, 186, 64) {
+        this.addSlot(new Slot(this.container, 1, 186, 68) {
             @Override
             public boolean mayPlace(ItemStack stack) {
                 return stack.is(Items.DIAMOND);
@@ -77,23 +77,23 @@ public class MedicalVendingScreenHandler extends AbstractContainerMenu {
         });
 
         // Slot 2: Output Chute Slot
-        this.addSlot(new Slot(this.container, 2, 218, 46) {
+        this.addSlot(new Slot(this.container, 2, 222, 51) {
             @Override
             public boolean mayPlace(ItemStack stack) {
                 return false;
             }
         });
 
-        // Player Inventory (3 rows x 9 columns)
+        // Player Inventory (3 rows x 9 columns) - centered at x=48
         for (int row = 0; row < 3; ++row) {
             for (int col = 0; col < 9; ++col) {
-                this.addSlot(new Slot(playerInventory, col + row * 9 + 9, 36 + col * 18, 140 + row * 18));
+                this.addSlot(new Slot(playerInventory, col + row * 9 + 9, 48 + col * 18, 146 + row * 18));
             }
         }
 
-        // Player Hotbar (1 row x 9 columns)
+        // Player Hotbar (1 row x 9 columns) - centered at x=48
         for (int col = 0; col < 9; ++col) {
-            this.addSlot(new Slot(playerInventory, col, 36 + col * 18, 198));
+            this.addSlot(new Slot(playerInventory, col, 48 + col * 18, 204));
         }
     }
 
@@ -161,7 +161,7 @@ public class MedicalVendingScreenHandler extends AbstractContainerMenu {
             this.emeraldBuffer -= count;
             ItemStack refund = new ItemStack(Items.EMERALD, count);
             if (!player.getInventory().add(refund)) {
-                player.level().addFreshEntity(new net.minecraft.world.entity.item.ItemEntity(
+                player.level().addFreshEntity(new ItemEntity(
                     player.level(), player.getX(), player.getY(), player.getZ(), refund
                 ));
             }
@@ -172,7 +172,7 @@ public class MedicalVendingScreenHandler extends AbstractContainerMenu {
             this.diamondBuffer -= count;
             ItemStack refund = new ItemStack(Items.DIAMOND, count);
             if (!player.getInventory().add(refund)) {
-                player.level().addFreshEntity(new net.minecraft.world.entity.item.ItemEntity(
+                player.level().addFreshEntity(new ItemEntity(
                     player.level(), player.getX(), player.getY(), player.getZ(), refund
                 ));
             }
@@ -218,18 +218,15 @@ public class MedicalVendingScreenHandler extends AbstractContainerMenu {
             itemStack = slotStack.copy();
 
             if (index == 2) {
-                // Moving from output chute to player inventory
                 if (!this.moveItemStackTo(slotStack, 3, 39, true)) {
                     return ItemStack.EMPTY;
                 }
                 slot.onQuickCraft(slotStack, itemStack);
             } else if (index == 0 || index == 1) {
-                // Moving from coin slots to player inventory
                 if (!this.moveItemStackTo(slotStack, 3, 39, false)) {
                     return ItemStack.EMPTY;
                 }
             } else {
-                // Moving from player inventory to coin slots
                 if (slotStack.is(Items.EMERALD)) {
                     if (!this.moveItemStackTo(slotStack, 0, 1, false)) {
                         return ItemStack.EMPTY;
