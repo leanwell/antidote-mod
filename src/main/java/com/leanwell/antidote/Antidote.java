@@ -17,7 +17,7 @@ public class Antidote implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
-		LOGGER.info("Initializing Antidote Mod v1.1.0 for Minecraft 26.3...");
+		LOGGER.info("Initializing Antidote Mod v1.1.1 for Minecraft 26.3...");
 		ModBlocks.register();
 		ModBlockEntities.register();
 		ModScreenHandlers.register();

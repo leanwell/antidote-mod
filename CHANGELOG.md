@@ -2,6 +2,13 @@
 
 All notable changes to Antidote are documented in this file.
 
+## [1.1.1] - 2026-11-20
+
+### Fixed
+- **Village Church Generation**: Fixed Medical Vending Machine not naturally spawning inside village churches in new chunks. Implemented a structure piece placement mixin (`PoolElementStructurePieceMixin`) that detects village church templates (`plains_temple_3`, `desert_temple_1`, etc.) across all village biomes, locates the brewing stand altar, and intelligently places the 2-block machine on solid floor against the wall with proper orientation.
+
+---
+
 ## [1.1.0] - 2026-11-20
 
 ### Added
