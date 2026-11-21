@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:brewing",
+  "input": {
+    "item": "antidote:insomnia_antidote"
+  },
+  "reagent": {
+    "item": "minecraft:poisonous_potato"
+  },
+  "output": {
+    "id": "antidote:corrupt_insomnia_antidote"
+  }
+}

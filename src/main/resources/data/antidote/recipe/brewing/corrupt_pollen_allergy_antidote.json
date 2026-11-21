@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:brewing",
+  "input": {
+    "item": "antidote:pollen_allergy_antidote"
+  },
+  "reagent": {
+    "item": "minecraft:poisonous_potato"
+  },
+  "output": {
+    "id": "antidote:corrupt_pollen_allergy_antidote"
+  }
+}

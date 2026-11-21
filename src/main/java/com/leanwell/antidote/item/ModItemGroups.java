@@ -21,9 +21,35 @@ public class ModItemGroups {
                 .title(Component.translatable("itemGroup.antidote.antidotes"))
                 .displayItems((displayContext, entries) -> {
                     entries.accept(ModBlocks.MEDICAL_VENDING_MACHINE_ITEM);
+                    
+                    // Standard Antidotes
                     entries.accept(ModItems.GOD_ANTIDOTE);
                     for (AntidoteItem item : ModItems.getAll().values()) {
                         if (item != ModItems.GOD_ANTIDOTE) {
+                            entries.accept(item);
+                        }
+                    }
+
+                    // Splash Antidotes
+                    entries.accept(ModItems.SPLASH_GOD_ANTIDOTE);
+                    for (SplashAntidoteItem item : ModItems.getAllSplash().values()) {
+                        if (item != ModItems.SPLASH_GOD_ANTIDOTE) {
+                            entries.accept(item);
+                        }
+                    }
+
+                    // Corrupt Potions
+                    entries.accept(ModItems.CORRUPT_GOD_ANTIDOTE);
+                    for (CorruptAntidoteItem item : ModItems.getAllCorrupt().values()) {
+                        if (item != ModItems.CORRUPT_GOD_ANTIDOTE) {
+                            entries.accept(item);
+                        }
+                    }
+
+                    // Splash Corrupt Potions
+                    entries.accept(ModItems.SPLASH_CORRUPT_GOD_ANTIDOTE);
+                    for (SplashCorruptAntidoteItem item : ModItems.getAllSplashCorrupt().values()) {
+                        if (item != ModItems.SPLASH_CORRUPT_GOD_ANTIDOTE) {
                             entries.accept(item);
                         }
                     }

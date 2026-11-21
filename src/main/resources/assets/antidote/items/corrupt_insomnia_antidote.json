@@ -1,0 +1,12 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "antidote:item/corrupt_antidote_bottle",
+    "tints": [
+      {
+        "type": "minecraft:constant",
+        "value": -14154421
+      }
+    ]
+  }
+}

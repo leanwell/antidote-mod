@@ -2,7 +2,28 @@
 
 All notable changes to Antidote are documented in this file.
 
-## [1.1.2] - 2026-11-21
+## [1.2.0] - 2026-11-21
+
+### Added
+- **Splash Antidotes (Positive Medical Support)**:
+  - 31 new throwable splash cures covering all conditions and the Splash God Antidote.
+  - Brewed by placing any standard Antidote + Gunpowder in a Brewing Stand.
+  - On impact, shatters in a 4-block Area of Effect (AoE) cloud that cures all players in radius.
+- **Corrupt Potions (Curse Alchemistry / Drinkable)**:
+  - 31 new drinkable curse potions covering all conditions and the Corrupt God Potion.
+  - Brewed by fermenting any standard Antidote with a Poisonous Potato in a Brewing Stand.
+  - When consumed, permanently inflicts the disability condition on the drinker.
+  - **Corrupt God Potion**: Inflicts all 30 conditions at once.
+- **Splash Corrupt Potions (Offensive PvP Weapons)**:
+  - 31 new throwable curse weapons covering all conditions and the Splash Corrupt God Potion.
+  - Brewed by adding Gunpowder to any Corrupt Potion in a Brewing Stand.
+  - On impact, shatters in an AoE cloud that inflicts the condition onto all target players caught in the splash radius.
+- **Data-Driven Brewing Recipes**:
+  - Implemented 93 data-driven brewing recipes under `data/antidote/recipe/brewing/` compatible with vanilla Brewing Stands.
+- **Custom Projectile Entity & Rendering**:
+  - Registered `splash_antidote` projectile entity with smooth trajectory physics and client-side `ThrownItemRenderer`.
+- **Creative Mode Integration**:
+  - All 93 new potions added to the Antidotes Creative Tab in organized sections (Standard Antidotes, Splash Antidotes, Corrupt Potions, Splash Corrupt Potions).
 
 ### Added
 - **Configurable Vending Pricing (`config/antidote.json`)**:

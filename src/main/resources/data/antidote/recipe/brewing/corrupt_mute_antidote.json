@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:brewing",
+  "input": {
+    "item": "antidote:mute_antidote"
+  },
+  "reagent": {
+    "item": "minecraft:poisonous_potato"
+  },
+  "output": {
+    "id": "antidote:corrupt_mute_antidote"
+  }
+}
