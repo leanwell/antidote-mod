@@ -40,26 +40,20 @@ public class WanderingMonkSpawner {
             cycleThreshold = random.nextFloat();
         }
 
-        // Only increment spawn cycle timer when no monk is already present nearby
-        boolean monkActiveNearby = false;
+        elapsedCycleTicks++;
+        if (elapsedCycleTicks % CHECK_INTERVAL_TICKS != 0) {
+            return;
+        }
+
+        // Only scan for nearby active monks once every interval (every 60s / 1,200 ticks)
         for (ServerPlayer player : players) {
             List<WanderingMonkEntity> nearby = level.getEntitiesOfClass(
                 WanderingMonkEntity.class,
                 player.getBoundingBox().inflate(128.0)
             );
             if (!nearby.isEmpty()) {
-                monkActiveNearby = true;
-                break;
+                return; // A monk is already active nearby; pause until he departs
             }
-        }
-
-        if (monkActiveNearby) {
-            return;
-        }
-
-        elapsedCycleTicks++;
-        if (elapsedCycleTicks % CHECK_INTERVAL_TICKS != 0) {
-            return;
         }
 
         float cumulativeChance = getCumulativeChance(elapsedCycleTicks);

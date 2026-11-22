@@ -113,6 +113,8 @@ Pricing is fully customizable and automatically synchronized across multiplayer 
   - `/antidote multiplier <category> <value>`: Adjust percentage multiplier live.
   - `/antidote reload`: Reload configuration from disk and broadcast updates to all online clients.
   - `/antidote monk spawn`: Immediately spawn a Wandering Monk near your player for testing or spiritual aid.
+  - `/antidote monk status`: Check live spawner statistics (elapsed cycle time, cumulative chance, target threshold).
+  - `/antidote monk reset`: Reset the Wandering Monk spawn cycle back to 0 minutes.
 
 ---
 
@@ -120,19 +122,43 @@ Pricing is fully customizable and automatically synchronized across multiplayer 
 
 The **Wandering Monk** (`antidote:wandering_monk`) is a peaceful, wandering Franciscan-style hermit clad in earthen robes and a rope belt. Unlike traditional village merchants, he does not accept worldly coin (emeralds or diamonds), instead offering sacred cleanses in exchange for humble sustenance.
 
-### Sacred Offerings
+### Sacred Offerings & Trade Limits
 
-| Offering | Cost | Uses | Effect on Consumption |
+Each visit, the Monk offers a limited supply of consecrated sustenance. Once his stock is exhausted, the trade is struck through with a red **X** and cannot be used again during that visit:
+
+| Offering | Cost | Stock Limit | Effect on Consumption |
 | :--- | :--- | :--- | :--- |
-| **Blessed Bread of Relief** | 5 Bread | 3 | Edible even when full. Cures **1 random active affliction** and displays cheerful green sparkle effects. |
-| **Fruit of Enlightenment** | 20 Bread + 2 Honey Bottles | 1 | Edible even when full (purple shimmering glint apple). Cleanses **all active afflictions**, resets the disability timer, refunds 2 empty glass bottles, and plays a holy totem resonance. |
+| **Blessed Bread of Relief** | 5 Bread | **3 uses** | Edible even when full. Cures **1 random active affliction** and displays cheerful green sparkle effects. |
+| **Fruit of Enlightenment** | 20 Bread + 2 Honey Bottles | **1 use** | Edible even when full (purple shimmering glint apple). Cleanses **all active afflictions**, resets the disability timer, refunds 2 empty glass bottles, and plays a holy totem resonance. |
 
-### Behavior & Lifespan
+### Spawn Schedule & Spawner Mechanics
 
-- **Natural Spawning**: Periodically roams into the wilderness near surface players.
-- **Stay Longevity**: Remains in the area for up to 40 real-time minutes (48,000 game ticks) before departing on his pilgrimage.
-- **Departing Ceremony**: Once a player completes trades with the Monk, closing the trade window prompts his graceful departure in swirling incense smoke and a resonating church bell chime.
-- **Pacifist Defense**: If attacked, the Monk never retaliates. He deploys a holy smokescreen that temporarily blinds and slows hostile attackers, then teleports up to 16 blocks to safety.
+The Monk follows an escalating cumulative spawn curve over a **2.5 Minecraft day cycle** (~50 real-time minutes at normal speed, scaling proportionally with `/tick rate`):
+
+| Real Time (20 TPS) | In-Game Time | Cumulative Spawn Chance |
+| :--- | :--- | :--- |
+| **0 - 2 minutes** | 0.0 - 0.1 MC days | **0%** (Grace period) |
+| **4 minutes** | 0.2 MC days | **10%** |
+| **6 minutes** | 0.3 MC days | **25%** |
+| **10 minutes** | 0.5 MC days (Half a day) | **35%** |
+| **20 minutes** | 1.0 full MC day | **50%** |
+| **30 minutes** | 1.5 MC days | **75%** |
+| **40 minutes** | 2.0 MC days | **80%** |
+| **50 minutes** | 2.5 MC days | **99%** |
+| **> 50 minutes** | > 2.5 MC days | **100% (Guaranteed)** |
+
+### Multiplayer & Server-Friendly Design
+
+- **One Global Pilgrim**: Just like vanilla's Wandering Trader, exactly **1 Wandering Monk** exists in the world at a time across the entire server.
+- **Fair Player Selection**: When the cumulative threshold is met, the server randomly selects one online player on the Overworld surface to receive the visit.
+- **Active Pausing**: While a Monk is alive near any player, the spawn cycle pauses so monks will never flood the world or duplicate.
+- **Zero-Lag Architecture**: The spawner uses heightmap O(1) memory lookups without chunk generation or heavy raycasting, checking entity bounding boxes only once per minute.
+
+### Behavior & Pilgrimage Lifespan
+
+- **Stay Longevity**: Remains in the area for up to **40 real-time minutes** (48,000 game ticks) before quietly departing.
+- **Departing Ceremony**: Once a player completes their trades and closes the trading screen, the Monk tolls a church bell, swirls incense smoke and golden totem sparkles, and bids farewell after a 3-second delay.
+- **Pacifist Defense**: If attacked, the Monk never retaliates. He deploys a holy smokescreen that temporarily blinds and slows hostile attackers for 5 seconds, then teleports up to 16 blocks to safety.
 
 ---
 
