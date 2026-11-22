@@ -156,6 +156,28 @@ public class AntidoteCommand {
                             return 0;
                         })
                     )
+                    .then(Commands.literal("status")
+                        .executes(context -> {
+                            int ticks = com.leanwell.antidote.world.WanderingMonkSpawner.getElapsedCycleTicks();
+                            float chance = com.leanwell.antidote.world.WanderingMonkSpawner.getCumulativeChance(ticks);
+                            float threshold = com.leanwell.antidote.world.WanderingMonkSpawner.getCycleThreshold();
+                            int totalSecs = ticks / 20;
+                            int mins = totalSecs / 60;
+                            int secs = totalSecs % 60;
+                            context.getSource().sendSuccess(() -> Component.literal(String.format(
+                                "Wandering Monk Spawner: %dm %02ds (%d ticks) | Cumulative Chance: %.1f%% | Target Threshold: %.1f%%",
+                                mins, secs, ticks, chance * 100.0F, threshold * 100.0F
+                            )), false);
+                            return 1;
+                        })
+                    )
+                    .then(Commands.literal("reset")
+                        .executes(context -> {
+                            com.leanwell.antidote.world.WanderingMonkSpawner.resetCycle(null);
+                            context.getSource().sendSuccess(() -> Component.literal("Wandering Monk spawn cycle reset to 0 minutes."), true);
+                            return 1;
+                        })
+                    )
                 )
             );
         });
