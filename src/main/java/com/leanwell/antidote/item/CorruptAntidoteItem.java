@@ -70,6 +70,9 @@ public class CorruptAntidoteItem extends Item {
                     Component.literal("Afflicted with ALL disabilities!")
                         .withStyle(ChatFormatting.DARK_RED, ChatFormatting.BOLD)
                 );
+
+                com.leanwell.antidote.advancement.ModAdvancements.award(player, "drink_corrupt");
+                com.leanwell.antidote.advancement.ModAdvancements.award(player, "pandemonium");
             } else {
                 server.getCommands().performPrefixedCommand(source,
                     "disability give " + player.getName().getString() + " " + disabilityType.getId());
@@ -85,6 +88,8 @@ public class CorruptAntidoteItem extends Item {
                     Component.literal("Afflicted with " + disabilityType.getDisplayName() + "!")
                         .withStyle(ChatFormatting.DARK_RED, ChatFormatting.BOLD)
                 );
+
+                com.leanwell.antidote.advancement.ModAdvancements.award(player, "drink_corrupt");
             }
         }
     }

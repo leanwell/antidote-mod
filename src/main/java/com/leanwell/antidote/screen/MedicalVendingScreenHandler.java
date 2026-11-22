@@ -94,6 +94,13 @@ public class MedicalVendingScreenHandler extends AbstractContainerMenu {
                 ));
             }
 
+            if (player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
+                com.leanwell.antidote.advancement.ModAdvancements.award(serverPlayer, "vending_customer");
+                if (discount > 0.0) {
+                    com.leanwell.antidote.advancement.ModAdvancements.award(serverPlayer, "subsidized_healthcare");
+                }
+            }
+
             this.broadcastChanges();
             playDispenseAudio(player);
             return true;

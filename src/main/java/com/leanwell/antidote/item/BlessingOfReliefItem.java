@@ -50,6 +50,8 @@ public class BlessingOfReliefItem extends Item {
                     Component.literal("Affliction eased by the Blessed Bread!")
                         .withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD)
                 );
+
+                com.leanwell.antidote.advancement.ModAdvancements.award(player, "eat_blessing");
             }
         }
         return super.finishUsingItem(itemStack, level, entity);

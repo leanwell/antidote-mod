@@ -53,6 +53,8 @@ public class GrandEnlightenmentItem extends Item {
                     Component.literal("All afflictions cleansed by Grand Enlightenment!")
                         .withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD)
                 );
+
+                com.leanwell.antidote.advancement.ModAdvancements.award(player, "enlightenment");
             }
         }
         return super.finishUsingItem(itemStack, level, entity);

@@ -1,0 +1,23 @@
+{
+  "parent": "antidote:root",
+  "display": {
+    "icon": {
+      "id": "antidote:medical_vending_machine"
+    },
+    "title": {
+      "translate": "advancements.antidote.vending_customer.title"
+    },
+    "description": {
+      "translate": "advancements.antidote.vending_customer.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

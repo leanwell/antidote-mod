@@ -22,6 +22,7 @@ All credit for the Disabilities mod and its mechanics goes to OddSense.
 - **Splash Corrupt Potions (Offensive PvP Weapons)**: 31 throwable splash weapons brewed with Corrupt Potions + Gunpowder that inflict disabilities on all target players caught in the splash radius.
 - **Medical Vending Machine**: A 2-block tall, coin-operated medical station found naturally in village churches featuring an active healthcare economy, live recipe library, and smart real-time search engine.
 - **Vanilla Brewing Stand Integration**: 93 data-driven brewing recipes compatible with vanilla Brewing Stands.
+- **Dedicated Advancement Tab**: Custom "The Path to Healing" advancement tree with 12 progression achievements across Curing, Vending Machine commerce, Monk pilgrimage, and Corrupt Alchemistry.
 - **Dynamic Color Tinting**: Potion items feature custom tinting matching each disability theme, with corrupted dark-purple shifts for curse variants.
 - **Visual & Audio Feedback**: Custom particles, sound effects, and action bar feedback for drinking, throwing, and curing.
 - **Organized Creative Tab**: All items neatly grouped under the "Antidotes" creative tab.
@@ -214,14 +215,14 @@ All standard antidotes are shapeless crafting recipes that can be prepared in an
 
 ### Singleplayer / Client
 
-1. Download `antidote-1.3.0.jar` from GitHub Releases.
+1. Download `antidote-1.3.1.jar` from GitHub Releases.
 2. Ensure Fabric Loader 26.3, Fabric API, and the Disabilities mod are placed in your `.minecraft/mods` directory.
-3. Place `antidote-1.3.0.jar` into your `.minecraft/mods` directory.
+3. Place `antidote-1.3.1.jar` into your `.minecraft/mods` directory.
 
 ### Dedicated Server
 
 1. Install Fabric Loader on your dedicated server for Minecraft 26.3.
-2. Place Fabric API, Disabilities mod jar, and `antidote-1.3.0.jar` into the server's `mods` directory.
+2. Place Fabric API, Disabilities mod jar, and `antidote-1.3.1.jar` into the server's `mods` directory.
 3. Antidote must be installed on both the server and connecting clients for complete synchronization of models, networking, translations, and particles.
 
 ---
@@ -236,7 +237,7 @@ cd antidote-mod
 ./gradlew build
 ```
 
-The compiled mod JAR will be located in `build/libs/antidote-1.3.0.jar`.
+The compiled mod JAR will be located in `build/libs/antidote-1.3.1.jar`.
 
 ---
 

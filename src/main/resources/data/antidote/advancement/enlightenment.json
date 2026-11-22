@@ -1,0 +1,23 @@
+{
+  "parent": "antidote:monk_trade",
+  "display": {
+    "icon": {
+      "id": "antidote:grand_enlightenment"
+    },
+    "title": {
+      "translate": "advancements.antidote.enlightenment.title"
+    },
+    "description": {
+      "translate": "advancements.antidote.enlightenment.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

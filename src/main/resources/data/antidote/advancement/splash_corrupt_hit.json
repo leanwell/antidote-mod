@@ -1,0 +1,23 @@
+{
+  "parent": "antidote:brew_corrupt",
+  "display": {
+    "icon": {
+      "id": "antidote:splash_corrupt_blind_antidote"
+    },
+    "title": {
+      "translate": "advancements.antidote.splash_corrupt_hit.title"
+    },
+    "description": {
+      "translate": "advancements.antidote.splash_corrupt_hit.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

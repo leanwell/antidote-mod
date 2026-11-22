@@ -1,0 +1,23 @@
+{
+  "parent": "antidote:monk_trade",
+  "display": {
+    "icon": {
+      "id": "minecraft:bread"
+    },
+    "title": {
+      "translate": "advancements.antidote.eat_blessing.title"
+    },
+    "description": {
+      "translate": "advancements.antidote.eat_blessing.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

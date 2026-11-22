@@ -1,0 +1,23 @@
+{
+  "parent": "antidote:vending_customer",
+  "display": {
+    "icon": {
+      "id": "minecraft:emerald"
+    },
+    "title": {
+      "translate": "advancements.antidote.subsidized_healthcare.title"
+    },
+    "description": {
+      "translate": "advancements.antidote.subsidized_healthcare.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}
