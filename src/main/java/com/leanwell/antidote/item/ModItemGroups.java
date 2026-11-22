@@ -53,6 +53,10 @@ public class ModItemGroups {
                             entries.accept(item);
                         }
                     }
+
+                    // Sacred Monk Blessings
+                    entries.accept(ModItems.BLESSING_OF_RELIEF);
+                    entries.accept(ModItems.GRAND_ENLIGHTENMENT);
                 })
                 .build()
         );

@@ -127,5 +127,8 @@
   "item.antidote.splash_god_antidote": "Splash God Antidote",
   "item.antidote.corrupt_god_antidote": "Corrupt God Potion",
   "item.antidote.splash_corrupt_god_antidote": "Splash Corrupt God Potion",
-  "entity.antidote.splash_antidote": "Splash Antidote"
+  "item.antidote.blessing_of_relief": "Blessed Bread of Relief",
+  "item.antidote.grand_enlightenment": "Fruit of Enlightenment",
+  "entity.antidote.splash_antidote": "Splash Antidote",
+  "entity.antidote.wandering_monk": "Wandering Monk"
 }
