@@ -2,7 +2,7 @@
 
 All notable changes to Antidote are documented in this file.
 
-## [1.2.0] - 2026-11-21
+## [1.2.0] - 2026-11-22
 
 ### Added
 - **Splash Antidotes (Positive Medical Support)**:
@@ -24,6 +24,19 @@ All notable changes to Antidote are documented in this file.
   - Registered `splash_antidote` projectile entity with smooth trajectory physics and client-side `ThrownItemRenderer`.
 - **Creative Mode Integration**:
   - All 93 new potions added to the Antidotes Creative Tab in organized sections (Standard Antidotes, Splash Antidotes, Corrupt Potions, Splash Corrupt Potions).
+- **Medical Vending Machine Real-Time Smart Search Box**:
+  - Top-right header search widget (`EditBox`) supporting live filtering across all tabs (Antidotes, Ingredients, God Tier, and Recipe Library).
+  - Smart case-insensitive matching across item names, conditions, lore, and component recipe ingredients.
+  - Keyboard focus isolation preventing container hotkeys (like `E` or `Q`) from closing the UI or dropping items while typing.
+  - Escape and right-click quick-clear shortcuts.
+
+### Fixed
+- **Vending Machine Search Focus & Typing**: Fixed input handling for SDL3 where mouse button indices differ (left-click is button 1 and right-click is button 3), ensuring the search box focuses and receives `CharacterEvent` properly in both Creative and Survival modes.
+- **Curse Command Execution**: Fixed Corrupt and Splash Corrupt Potions executing `/disability add` by switching to the Disabilities mod's correct `/disability give <player> <condition>` command (`all` for God Corrupt Potion).
+
+---
+
+## [1.1.2] - 2026-11-21
 
 ### Added
 - **Configurable Vending Pricing (`config/antidote.json`)**:
