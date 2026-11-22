@@ -6,15 +6,19 @@ import com.leanwell.antidote.screen.MedicalVendingScreenHandler;
 import com.leanwell.antidote.store.MedicalLibrary;
 import com.leanwell.antidote.store.VendingCatalog;
 import com.leanwell.antidote.store.VendingProduct;
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
@@ -41,6 +45,7 @@ public class MedicalVendingScreen extends AbstractContainerScreen<MedicalVending
 
     private Button storeBuyButton;
     private Button libraryBuyButton;
+    private EditBox searchBox;
 
     public MedicalVendingScreen(MedicalVendingScreenHandler handler, Inventory inventory, Component title) {
         super(handler, inventory, title, 256, 230);
@@ -79,8 +84,25 @@ public class MedicalVendingScreen extends AbstractContainerScreen<MedicalVending
 
         this.addRenderableWidget(Button.builder(Component.literal("Library"), b -> {
             this.activeTab = ActiveTab.LIBRARY;
+            this.libraryScrollOffset = 0;
+            this.selectedLibraryIndex = 0;
             updateButtonVisibility();
         }).bounds(this.leftPos + 178, tabY, 48, 16).build());
+
+        // Top-right Real-Time Search Box
+        String prevText = this.searchBox != null ? this.searchBox.getValue() : "";
+        this.searchBox = new EditBox(this.font, this.leftPos + 155, this.topPos + 4, 92, 12, Component.literal("Search"));
+        this.searchBox.setHint(Component.literal("Search...").withStyle(EditBox.SEARCH_HINT_STYLE));
+        this.searchBox.setMaxLength(32);
+        this.searchBox.setBordered(true);
+        this.searchBox.setValue(prevText);
+        this.searchBox.setResponder(s -> {
+            this.scrollOffset = 0;
+            this.libraryScrollOffset = 0;
+            this.selectedStoreIndex = 0;
+            this.selectedLibraryIndex = 0;
+        });
+        this.addRenderableWidget(this.searchBox);
 
         // Store Buy Button in the right-side detail pane (next to selected item slot)
         this.storeBuyButton = this.addRenderableWidget(Button.builder(Component.literal("Buy"), b -> {
@@ -105,6 +127,61 @@ public class MedicalVendingScreen extends AbstractContainerScreen<MedicalVending
         }
     }
 
+    private List<VendingProduct> getFilteredStoreProducts(VendingProduct.Category cat) {
+        List<VendingProduct> all = VendingCatalog.getByCategory(cat);
+        if (this.searchBox == null) {
+            return all;
+        }
+        String query = this.searchBox.getValue().trim().toLowerCase();
+        if (query.isEmpty()) {
+            return all;
+        }
+
+        List<VendingProduct> filtered = new ArrayList<>();
+        for (VendingProduct p : all) {
+            String itemName = p.getItemStack().getHoverName().getString().toLowerCase();
+            String desc = p.getDescription().toLowerCase();
+            if (itemName.contains(query) || desc.contains(query)) {
+                filtered.add(p);
+            }
+        }
+        return filtered;
+    }
+
+    private List<MedicalLibrary.RecipeEntry> getFilteredLibraryEntries() {
+        List<MedicalLibrary.RecipeEntry> all = MedicalLibrary.getEntries();
+        if (this.searchBox == null) {
+            return all;
+        }
+        String query = this.searchBox.getValue().trim().toLowerCase();
+        if (query.isEmpty()) {
+            return all;
+        }
+
+        List<MedicalLibrary.RecipeEntry> filtered = new ArrayList<>();
+        for (MedicalLibrary.RecipeEntry entry : all) {
+            String condition = entry.conditionName().toLowerCase();
+            String lore = entry.lore().toLowerCase();
+            String antidoteName = new ItemStack(entry.antidote()).getHoverName().getString().toLowerCase();
+
+            boolean match = condition.contains(query) || lore.contains(query) || antidoteName.contains(query);
+            if (!match) {
+                for (Item ingredient : entry.ingredients()) {
+                    String ingName = new ItemStack(ingredient).getHoverName().getString().toLowerCase();
+                    if (ingName.contains(query)) {
+                        match = true;
+                        break;
+                    }
+                }
+            }
+
+            if (match) {
+                filtered.add(entry);
+            }
+        }
+        return filtered;
+    }
+
     private void buySelectedStoreItem() {
         VendingProduct.Category cat = switch (this.activeTab) {
             case INGREDIENTS -> VendingProduct.Category.INGREDIENTS;
@@ -112,7 +189,7 @@ public class MedicalVendingScreen extends AbstractContainerScreen<MedicalVending
             default -> VendingProduct.Category.ANTIDOTES;
         };
 
-        List<VendingProduct> products = VendingCatalog.getByCategory(cat);
+        List<VendingProduct> products = getFilteredStoreProducts(cat);
         if (this.selectedStoreIndex >= 0 && this.selectedStoreIndex < products.size()) {
             VendingProduct product = products.get(this.selectedStoreIndex);
             if (this.minecraft != null && this.minecraft.gameMode != null) {
@@ -123,7 +200,7 @@ public class MedicalVendingScreen extends AbstractContainerScreen<MedicalVending
     }
 
     private void buySelectedLibraryItem() {
-        List<MedicalLibrary.RecipeEntry> entries = MedicalLibrary.getEntries();
+        List<MedicalLibrary.RecipeEntry> entries = getFilteredLibraryEntries();
         if (this.selectedLibraryIndex >= 0 && this.selectedLibraryIndex < entries.size()) {
             MedicalLibrary.RecipeEntry selected = entries.get(this.selectedLibraryIndex);
             for (VendingProduct p : VendingCatalog.getAll()) {
@@ -188,7 +265,18 @@ public class MedicalVendingScreen extends AbstractContainerScreen<MedicalVending
             default -> VendingProduct.Category.ANTIDOTES;
         };
 
-        List<VendingProduct> products = VendingCatalog.getByCategory(cat);
+        List<VendingProduct> products = getFilteredStoreProducts(cat);
+        if (this.selectedStoreIndex >= products.size()) {
+            this.selectedStoreIndex = products.isEmpty() ? -1 : 0;
+        }
+
+        if (products.isEmpty()) {
+            graphics.text(this.font, "No matching items", catalogX + 28, catalogY + 40, 0xFF444444, false);
+            if (this.storeBuyButton != null) {
+                this.storeBuyButton.active = false;
+            }
+        }
+
         int startIndex = this.scrollOffset * CATALOG_COLS;
 
         int invEm = this.minecraft != null && this.minecraft.player != null
@@ -282,6 +370,8 @@ public class MedicalVendingScreen extends AbstractContainerScreen<MedicalVending
             if (this.storeBuyButton != null) {
                 this.storeBuyButton.active = canAfford;
             }
+        } else if (this.storeBuyButton != null) {
+            this.storeBuyButton.active = false;
         }
     }
 
@@ -291,7 +381,10 @@ public class MedicalVendingScreen extends AbstractContainerScreen<MedicalVending
         int listY = top + 36;
         drawRecessedPanel(graphics, listX, listY, 52, 94);
 
-        List<MedicalLibrary.RecipeEntry> entries = MedicalLibrary.getEntries();
+        List<MedicalLibrary.RecipeEntry> entries = getFilteredLibraryEntries();
+        if (this.selectedLibraryIndex >= entries.size()) {
+            this.selectedLibraryIndex = entries.isEmpty() ? -1 : 0;
+        }
         int startIndex = this.libraryScrollOffset * 2;
 
         for (int i = 0; i < 8; ++i) {
@@ -323,6 +416,15 @@ public class MedicalVendingScreen extends AbstractContainerScreen<MedicalVending
         int infoW = 184;
         int infoH = 94;
         drawRecessedPanel(graphics, infoX, infoY, infoW, infoH);
+
+        if (entries.isEmpty()) {
+            graphics.text(this.font, "No matching recipes", infoX + 36, infoY + 40, 0xFF444444, false);
+            if (this.libraryBuyButton != null) {
+                this.libraryBuyButton.active = false;
+                this.libraryBuyButton.setMessage(Component.literal("Buy"));
+            }
+            return;
+        }
 
         if (this.selectedLibraryIndex >= 0 && this.selectedLibraryIndex < entries.size()) {
             MedicalLibrary.RecipeEntry selected = entries.get(this.selectedLibraryIndex);
@@ -413,7 +515,7 @@ public class MedicalVendingScreen extends AbstractContainerScreen<MedicalVending
                 default -> VendingProduct.Category.ANTIDOTES;
             };
 
-            List<VendingProduct> products = VendingCatalog.getByCategory(cat);
+            List<VendingProduct> products = getFilteredStoreProducts(cat);
             VendingProduct selectedProduct = null;
             if (this.selectedStoreIndex >= 0 && this.selectedStoreIndex < products.size()) {
                 selectedProduct = products.get(this.selectedStoreIndex);
@@ -457,7 +559,7 @@ public class MedicalVendingScreen extends AbstractContainerScreen<MedicalVending
             int infoX = 64;
             int infoY = 36;
             int infoW = 184;
-            List<MedicalLibrary.RecipeEntry> entries = MedicalLibrary.getEntries();
+            List<MedicalLibrary.RecipeEntry> entries = getFilteredLibraryEntries();
 
             if (this.selectedLibraryIndex >= 0 && this.selectedLibraryIndex < entries.size()) {
                 MedicalLibrary.RecipeEntry selected = entries.get(this.selectedLibraryIndex);
@@ -498,7 +600,7 @@ public class MedicalVendingScreen extends AbstractContainerScreen<MedicalVending
             default -> VendingProduct.Category.ANTIDOTES;
         };
 
-        List<VendingProduct> products = VendingCatalog.getByCategory(cat);
+        List<VendingProduct> products = getFilteredStoreProducts(cat);
         int startIndex = this.scrollOffset * CATALOG_COLS;
 
         int invEm = this.minecraft != null && this.minecraft.player != null
@@ -560,7 +662,7 @@ public class MedicalVendingScreen extends AbstractContainerScreen<MedicalVending
         int listX = left + 8;
         int listY = top + 36;
 
-        List<MedicalLibrary.RecipeEntry> entries = MedicalLibrary.getEntries();
+        List<MedicalLibrary.RecipeEntry> entries = getFilteredLibraryEntries();
         int startIndex = this.libraryScrollOffset * 2;
 
         for (int i = 0; i < 8; ++i) {
@@ -602,6 +704,13 @@ public class MedicalVendingScreen extends AbstractContainerScreen<MedicalVending
 
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        if (this.searchBox != null && this.searchBox.isMouseOver(event.x(), event.y())) {
+            if (event.button() == 1) { // Right-click clears search query
+                this.searchBox.setValue("");
+                return true;
+            }
+        }
+
         int left = this.leftPos;
         int top = this.topPos;
         double mouseX = event.x();
@@ -610,7 +719,7 @@ public class MedicalVendingScreen extends AbstractContainerScreen<MedicalVending
         if (this.activeTab == ActiveTab.LIBRARY) {
             int listX = left + 8;
             int listY = top + 36;
-            List<MedicalLibrary.RecipeEntry> entries = MedicalLibrary.getEntries();
+            List<MedicalLibrary.RecipeEntry> entries = getFilteredLibraryEntries();
             int startIndex = this.libraryScrollOffset * 2;
 
             for (int i = 0; i < 8; ++i) {
@@ -624,6 +733,9 @@ public class MedicalVendingScreen extends AbstractContainerScreen<MedicalVending
 
                 if (mouseX >= slotX && mouseX <= slotX + 18 && mouseY >= slotY && mouseY <= slotY + 18) {
                     this.selectedLibraryIndex = entryIndex;
+                    if (this.searchBox != null) {
+                        this.searchBox.setFocused(false);
+                    }
                     if (this.minecraft != null) {
                         AbstractWidget.playButtonClickSound(this.minecraft.getSoundManager());
                     }
@@ -639,7 +751,7 @@ public class MedicalVendingScreen extends AbstractContainerScreen<MedicalVending
                 default -> VendingProduct.Category.ANTIDOTES;
             };
 
-            List<VendingProduct> products = VendingCatalog.getByCategory(cat);
+            List<VendingProduct> products = getFilteredStoreProducts(cat);
             int startIndex = this.scrollOffset * CATALOG_COLS;
 
             for (int i = 0; i < CATALOG_COLS * CATALOG_ROWS; ++i) {
@@ -653,6 +765,9 @@ public class MedicalVendingScreen extends AbstractContainerScreen<MedicalVending
 
                 if (mouseX >= cellX && mouseX < cellX + CELL_SIZE && mouseY >= cellY && mouseY < cellY + CELL_SIZE) {
                     this.selectedStoreIndex = productIndex;
+                    if (this.searchBox != null) {
+                        this.searchBox.setFocused(false);
+                    }
                     if (this.minecraft != null) {
                         AbstractWidget.playButtonClickSound(this.minecraft.getSoundManager());
                     }
@@ -665,9 +780,31 @@ public class MedicalVendingScreen extends AbstractContainerScreen<MedicalVending
     }
 
     @Override
+    public boolean keyPressed(KeyEvent event) {
+        if (this.searchBox != null && this.searchBox.isFocused()) {
+            if (event.key() == InputConstants.KEY_ESCAPE) {
+                if (!this.searchBox.getValue().isEmpty()) {
+                    this.searchBox.setValue("");
+                    return true;
+                }
+                return super.keyPressed(event);
+            }
+            if (event.key() == InputConstants.KEY_TAB) {
+                return super.keyPressed(event);
+            }
+            if (this.searchBox.keyPressed(event)) {
+                return true;
+            }
+            // Consume input to prevent container hotkeys / inventory keys from triggering while typing
+            return true;
+        }
+        return super.keyPressed(event);
+    }
+
+    @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
         if (this.activeTab == ActiveTab.LIBRARY) {
-            List<MedicalLibrary.RecipeEntry> entries = MedicalLibrary.getEntries();
+            List<MedicalLibrary.RecipeEntry> entries = getFilteredLibraryEntries();
             int maxRows = (int) Math.ceil((double) entries.size() / 2);
             int maxScroll = Math.max(0, maxRows - 4);
 
@@ -685,7 +822,7 @@ public class MedicalVendingScreen extends AbstractContainerScreen<MedicalVending
                 default -> VendingProduct.Category.ANTIDOTES;
             };
 
-            List<VendingProduct> products = VendingCatalog.getByCategory(cat);
+            List<VendingProduct> products = getFilteredStoreProducts(cat);
             int maxRows = (int) Math.ceil((double) products.size() / CATALOG_COLS);
             int maxScroll = Math.max(0, maxRows - CATALOG_ROWS);
 
