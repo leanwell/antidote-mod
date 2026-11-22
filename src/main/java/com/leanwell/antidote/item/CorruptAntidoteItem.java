@@ -56,11 +56,8 @@ public class CorruptAntidoteItem extends Item {
                 .withSuppressedOutput();
 
             if (disabilityType == DisabilityType.GOD_ANTIDOTE) {
-                for (DisabilityType type : DisabilityType.values()) {
-                    if (type == DisabilityType.GOD_ANTIDOTE) continue;
-                    server.getCommands().performPrefixedCommand(source,
-                        "disability add " + player.getName().getString() + " " + type.getId());
-                }
+                server.getCommands().performPrefixedCommand(source,
+                    "disability give " + player.getName().getString() + " all");
 
                 serverLevel.sendParticles(ParticleTypes.SOUL_FIRE_FLAME,
                     player.getX(), player.getY() + 1.0, player.getZ(),
@@ -75,7 +72,7 @@ public class CorruptAntidoteItem extends Item {
                 );
             } else {
                 server.getCommands().performPrefixedCommand(source,
-                    "disability add " + player.getName().getString() + " " + disabilityType.getId());
+                    "disability give " + player.getName().getString() + " " + disabilityType.getId());
 
                 serverLevel.sendParticles(ParticleTypes.WITCH,
                     player.getX(), player.getY() + 1.0, player.getZ(),

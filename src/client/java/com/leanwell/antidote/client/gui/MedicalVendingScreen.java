@@ -13,6 +13,7 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -705,10 +706,13 @@ public class MedicalVendingScreen extends AbstractContainerScreen<MedicalVending
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
         if (this.searchBox != null && this.searchBox.isMouseOver(event.x(), event.y())) {
-            if (event.button() == 1) { // Right-click clears search query
+            if (event.button() == 3) { // Right-click (SDL button 3) clears search query
                 this.searchBox.setValue("");
                 return true;
             }
+            // Left-click focuses the search box
+            this.setFocused(this.searchBox);
+            return this.searchBox.mouseClicked(event, doubleClick);
         }
 
         int left = this.leftPos;
@@ -733,9 +737,7 @@ public class MedicalVendingScreen extends AbstractContainerScreen<MedicalVending
 
                 if (mouseX >= slotX && mouseX <= slotX + 18 && mouseY >= slotY && mouseY <= slotY + 18) {
                     this.selectedLibraryIndex = entryIndex;
-                    if (this.searchBox != null) {
-                        this.searchBox.setFocused(false);
-                    }
+                    this.setFocused(null);
                     if (this.minecraft != null) {
                         AbstractWidget.playButtonClickSound(this.minecraft.getSoundManager());
                     }
@@ -765,9 +767,7 @@ public class MedicalVendingScreen extends AbstractContainerScreen<MedicalVending
 
                 if (mouseX >= cellX && mouseX < cellX + CELL_SIZE && mouseY >= cellY && mouseY < cellY + CELL_SIZE) {
                     this.selectedStoreIndex = productIndex;
-                    if (this.searchBox != null) {
-                        this.searchBox.setFocused(false);
-                    }
+                    this.setFocused(null);
                     if (this.minecraft != null) {
                         AbstractWidget.playButtonClickSound(this.minecraft.getSoundManager());
                     }
@@ -776,7 +776,21 @@ public class MedicalVendingScreen extends AbstractContainerScreen<MedicalVending
             }
         }
 
-        return super.mouseClicked(event, doubleClick);
+        boolean handled = super.mouseClicked(event, doubleClick);
+        if (!handled) {
+            this.setFocused(null);
+        }
+        return handled;
+    }
+
+    @Override
+    public boolean charTyped(CharacterEvent event) {
+        if (this.searchBox != null && this.searchBox.isFocused()) {
+            if (this.searchBox.charTyped(event)) {
+                return true;
+            }
+        }
+        return super.charTyped(event);
     }
 
     @Override
