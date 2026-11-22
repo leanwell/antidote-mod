@@ -21,6 +21,7 @@ public class WanderingMonkRenderer extends MobRenderer<WanderingMonkEntity, Vill
         this.addLayer(new CrossedArmsItemLayer<>(this));
         try {
             this.getModel().getHead().getChild("hat").getChild("hat_rim").visible = false;
+            this.getModel().getHead().getChild("nose").visible = false;
         } catch (Exception ignored) {
         }
     }
@@ -40,5 +41,10 @@ public class WanderingMonkRenderer extends MobRenderer<WanderingMonkEntity, Vill
         super.extractRenderState(entity, state, partialTicks);
         HoldingEntityRenderState.extractHoldingEntityRenderState(entity, state, this.itemModelResolver);
         state.isUnhappy = entity.getUnhappyCounter() > 0;
+        try {
+            this.getModel().getHead().getChild("hat").getChild("hat_rim").visible = false;
+            this.getModel().getHead().getChild("nose").visible = false;
+        } catch (Exception ignored) {
+        }
     }
 }
