@@ -84,10 +84,10 @@ public class WanderingMonkEntity extends WanderingTrader {
             0.0F
         ));
 
-        // Trade 2: Grand Cleanse (8 Bread + 1 Honey Bottle -> Grand Enlightenment)
+        // Trade 2: Grand Cleanse (20 Bread + 2 Honey Bottles -> Fruit of Enlightenment)
         offers.add(new MerchantOffer(
-            new ItemCost(Items.BREAD, 8),
-            Optional.of(new ItemCost(Items.HONEY_BOTTLE, 1)),
+            new ItemCost(Items.BREAD, 20),
+            Optional.of(new ItemCost(Items.HONEY_BOTTLE, 2)),
             new ItemStack(ModItems.GRAND_ENLIGHTENMENT),
             1, // Exactly 1 grand cure per monk visit
             1, // Reward 1 xp
@@ -104,10 +104,10 @@ public class WanderingMonkEntity extends WanderingTrader {
 
         if (this.level() instanceof ServerLevel serverLevel && this.getTradingPlayer() instanceof ServerPlayer player) {
             if (isGrand) {
-                // Refund an empty glass bottle for the consumed honey bottle
-                ItemStack emptyBottle = new ItemStack(Items.GLASS_BOTTLE);
-                if (!player.getInventory().add(emptyBottle)) {
-                    player.spawnAtLocation(serverLevel, emptyBottle);
+                // Refund 2 empty glass bottles for the 2 consumed honey bottles
+                ItemStack emptyBottles = new ItemStack(Items.GLASS_BOTTLE, 2);
+                if (!player.getInventory().add(emptyBottles)) {
+                    player.spawnAtLocation(serverLevel, emptyBottles);
                 }
                 this.shouldDepartAfterTrade = true;
                 this.departureTimer = 100; // Depart in 5s if player stays in menu
