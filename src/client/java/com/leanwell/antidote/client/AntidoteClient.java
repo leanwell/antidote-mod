@@ -2,6 +2,7 @@ package com.leanwell.antidote.client;
 
 import com.leanwell.antidote.Antidote;
 import com.leanwell.antidote.client.gui.MedicalVendingScreen;
+import com.leanwell.antidote.client.renderer.WanderingMonkRenderer;
 import com.leanwell.antidote.config.AntidoteConfigManager;
 import com.leanwell.antidote.entity.ModEntities;
 import com.leanwell.antidote.network.SyncConfigPayload;
@@ -17,6 +18,7 @@ public class AntidoteClient implements ClientModInitializer {
 	public void onInitializeClient() {
 		MenuScreens.register(ModScreenHandlers.MEDICAL_VENDING, MedicalVendingScreen::new);
 		EntityRendererRegistry.register(ModEntities.SPLASH_ANTIDOTE, ThrownItemRenderer::new);
+		EntityRendererRegistry.register(ModEntities.WANDERING_MONK, WanderingMonkRenderer::new);
 
 		ClientPlayNetworking.registerGlobalReceiver(SyncConfigPayload.TYPE, (payload, context) -> {
 			context.client().execute(() -> {
