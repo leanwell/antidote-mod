@@ -14,6 +14,9 @@ All credit for the Disabilities mod and its mechanics goes to OddSense.
 
 - **30 Condition-Specific Antidotes**: Each condition from the Disabilities mod has an individual drinkable antidote crafted from thematic ingredients.
 - **God Antidote**: An endgame cure-all that cures all active disabilities and resets the disability timer.
+- **Wandering Monk (Spiritual Healer)**: A peaceful traveling hermit entity who roams the world offering holy cleanses in exchange for humble sustenance.
+  - **Blessed Bread of Relief**: Restores hunger and cures 1 random active disability.
+  - **Fruit of Enlightenment**: An enchanted golden-glint red apple that cleanses all active afflictions, resets the disability timer, and refunds glass bottles.
 - **Splash Antidotes (Positive Support)**: 31 throwable area-of-effect potions brewed with Gunpowder that cure all players in a 4-block radius on impact.
 - **Corrupt Potions (Curse Alchemistry)**: 31 drinkable curse potions brewed by fermenting Antidotes with a Poisonous Potato. When consumed, permanently inflicts the disability condition on the drinker.
 - **Splash Corrupt Potions (Offensive PvP Weapons)**: 31 throwable splash weapons brewed with Corrupt Potions + Gunpowder that inflict disabilities on all target players caught in the splash radius.
@@ -21,7 +24,7 @@ All credit for the Disabilities mod and its mechanics goes to OddSense.
 - **Vanilla Brewing Stand Integration**: 93 data-driven brewing recipes compatible with vanilla Brewing Stands.
 - **Dynamic Color Tinting**: Potion items feature custom tinting matching each disability theme, with corrupted dark-purple shifts for curse variants.
 - **Visual & Audio Feedback**: Custom particles, sound effects, and action bar feedback for drinking, throwing, and curing.
-- **Organized Creative Tab**: All 124 items neatly grouped under the "Antidotes" creative tab.
+- **Organized Creative Tab**: All items neatly grouped under the "Antidotes" creative tab.
 
 ---
 
@@ -109,6 +112,27 @@ Pricing is fully customizable and automatically synchronized across multiplayer 
   - `/antidote price god_antidote <emeralds> [diamonds]`: Set God Antidote base price.
   - `/antidote multiplier <category> <value>`: Adjust percentage multiplier live.
   - `/antidote reload`: Reload configuration from disk and broadcast updates to all online clients.
+  - `/antidote monk spawn`: Immediately spawn a Wandering Monk near your player for testing or spiritual aid.
+
+---
+
+## The Wandering Monk (Traveling Spiritual Healer)
+
+The **Wandering Monk** (`antidote:wandering_monk`) is a peaceful, wandering Franciscan-style hermit clad in earthen robes and a rope belt. Unlike traditional village merchants, he does not accept worldly coin (emeralds or diamonds), instead offering sacred cleanses in exchange for humble sustenance.
+
+### Sacred Offerings
+
+| Offering | Cost | Uses | Effect on Consumption |
+| :--- | :--- | :--- | :--- |
+| **Blessed Bread of Relief** | 5 Bread | 3 | Edible even when full. Cures **1 random active affliction** and displays cheerful green sparkle effects. |
+| **Fruit of Enlightenment** | 20 Bread + 2 Honey Bottles | 1 | Edible even when full (purple shimmering glint apple). Cleanses **all active afflictions**, resets the disability timer, refunds 2 empty glass bottles, and plays a holy totem resonance. |
+
+### Behavior & Lifespan
+
+- **Natural Spawning**: Periodically roams into the wilderness near surface players.
+- **Stay Longevity**: Remains in the area for up to 40 real-time minutes (48,000 game ticks) before departing on his pilgrimage.
+- **Departing Ceremony**: Once a player completes trades with the Monk, closing the trade window prompts his graceful departure in swirling incense smoke and a resonating church bell chime.
+- **Pacifist Defense**: If attacked, the Monk never retaliates. He deploys a holy smokescreen that temporarily blinds and slows hostile attackers, then teleports up to 16 blocks to safety.
 
 ---
 
@@ -164,14 +188,14 @@ All standard antidotes are shapeless crafting recipes that can be prepared in an
 
 ### Singleplayer / Client
 
-1. Download `antidote-1.2.0.jar` from GitHub Releases.
+1. Download `antidote-1.3.0.jar` from GitHub Releases.
 2. Ensure Fabric Loader 26.3, Fabric API, and the Disabilities mod are placed in your `.minecraft/mods` directory.
-3. Place `antidote-1.2.0.jar` into your `.minecraft/mods` directory.
+3. Place `antidote-1.3.0.jar` into your `.minecraft/mods` directory.
 
 ### Dedicated Server
 
 1. Install Fabric Loader on your dedicated server for Minecraft 26.3.
-2. Place Fabric API, Disabilities mod jar, and `antidote-1.2.0.jar` into the server's `mods` directory.
+2. Place Fabric API, Disabilities mod jar, and `antidote-1.3.0.jar` into the server's `mods` directory.
 3. Antidote must be installed on both the server and connecting clients for complete synchronization of models, networking, translations, and particles.
 
 ---
@@ -186,7 +210,7 @@ cd antidote-mod
 ./gradlew build
 ```
 
-The compiled mod JAR will be located in `build/libs/antidote-1.2.0.jar`.
+The compiled mod JAR will be located in `build/libs/antidote-1.3.0.jar`.
 
 ---
 
