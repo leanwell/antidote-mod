@@ -48,6 +48,9 @@ public class GodAntidoteItem extends AntidoteItem {
                 Component.literal("All disabilities cured & timer reset!")
                     .withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD)
             );
+
+            com.leanwell.antidote.advancement.ModAdvancements.award(player, "first_cure");
+            com.leanwell.antidote.advancement.ModAdvancements.award(player, "cure_all");
         }
     }
 

@@ -97,12 +97,17 @@ public class WanderingMonkEntity extends WanderingTrader {
 
     @Override
     public void notifyTrade(MerchantOffer offer) {
-        super.notifyTrade(offer);
+        // Increment uses and reward xp, but deliberately bypass super.notifyTrade(offer)
+        // to prevent triggering the vanilla village trade achievement ("What a Deal!" / minecraft:adventure/trade)
+        offer.increaseUses();
+        this.ambientSoundTime = -this.getAmbientSoundInterval();
+        this.rewardTradeXp(offer);
 
         boolean isGrand = offer.getItemCostB().isPresent()
             && offer.getItemCostB().get().item().value() == Items.HONEY_BOTTLE;
 
         if (this.level() instanceof ServerLevel serverLevel && this.getTradingPlayer() instanceof ServerPlayer player) {
+            com.leanwell.antidote.advancement.ModAdvancements.award(player, "monk_trade");
             if (isGrand) {
                 // Refund 2 empty glass bottles for the 2 consumed honey bottles
                 ItemStack emptyBottles = new ItemStack(Items.GLASS_BOTTLE, 2);
@@ -156,6 +161,9 @@ public class WanderingMonkEntity extends WanderingTrader {
         if (source.getEntity() instanceof LivingEntity attacker) {
             attacker.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 60, 0));
             attacker.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 100, 1));
+            if (attacker instanceof ServerPlayer playerAttacker) {
+                com.leanwell.antidote.advancement.ModAdvancements.award(playerAttacker, "monk_escape");
+            }
         }
 
         serverLevel.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE,

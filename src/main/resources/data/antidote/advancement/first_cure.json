@@ -1,0 +1,23 @@
+{
+  "parent": "antidote:root",
+  "display": {
+    "icon": {
+      "id": "antidote:blind_antidote"
+    },
+    "title": {
+      "translate": "advancements.antidote.first_cure.title"
+    },
+    "description": {
+      "translate": "advancements.antidote.first_cure.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

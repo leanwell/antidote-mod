@@ -1,0 +1,23 @@
+{
+  "parent": "antidote:first_cure",
+  "display": {
+    "icon": {
+      "id": "antidote:god_antidote"
+    },
+    "title": {
+      "translate": "advancements.antidote.cure_all.title"
+    },
+    "description": {
+      "translate": "advancements.antidote.cure_all.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "parent": "antidote:root",
+  "display": {
+    "icon": {
+      "id": "minecraft:poisonous_potato"
+    },
+    "title": {
+      "translate": "advancements.antidote.brew_corrupt.title"
+    },
+    "description": {
+      "translate": "advancements.antidote.brew_corrupt.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "has_corrupt": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "antidote:corrupt_god_antidote",
+              "antidote:corrupt_blind_antidote",
+              "antidote:corrupt_color_blind_antidote",
+              "antidote:corrupt_deaf_antidote",
+              "antidote:corrupt_diabetes_antidote",
+              "antidote:corrupt_schizophrenia_antidote",
+              "antidote:corrupt_mute_antidote",
+              "antidote:corrupt_seizures_antidote",
+              "antidote:corrupt_cancer_antidote",
+              "antidote:corrupt_ocd_antidote",
+              "antidote:corrupt_amputated_offhand_antidote",
+              "antidote:corrupt_amputated_leg_antidote",
+              "antidote:corrupt_dyslexia_antidote",
+              "antidote:corrupt_short_antidote",
+              "antidote:corrupt_dementia_antidote",
+              "antidote:corrupt_asthma_antidote",
+              "antidote:corrupt_cerebral_palsy_antidote",
+              "antidote:corrupt_narcolepsy_antidote",
+              "antidote:corrupt_parkinsons_antidote",
+              "antidote:corrupt_pollen_allergy_antidote",
+              "antidote:corrupt_insomnia_antidote",
+              "antidote:corrupt_arthritis_antidote",
+              "antidote:corrupt_brittle_bones_antidote",
+              "antidote:corrupt_adhd_antidote",
+              "antidote:corrupt_tourettes_antidote",
+              "antidote:corrupt_vertigo_antidote",
+              "antidote:corrupt_prosopagnosia_antidote",
+              "antidote:corrupt_scoliosis_antidote",
+              "antidote:corrupt_kleptomania_antidote",
+              "antidote:corrupt_lactose_intolerance_antidote",
+              "antidote:corrupt_anosognosia_antidote"
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

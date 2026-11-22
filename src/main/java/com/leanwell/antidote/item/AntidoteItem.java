@@ -64,6 +64,8 @@ public class AntidoteItem extends Item {
                 Component.literal("Cured " + disabilityType.getDisplayName() + "!")
                     .withStyle(ChatFormatting.GREEN, ChatFormatting.BOLD)
             );
+
+            com.leanwell.antidote.advancement.ModAdvancements.award(player, "first_cure");
         }
     }
 

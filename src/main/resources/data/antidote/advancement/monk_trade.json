@@ -1,0 +1,23 @@
+{
+  "parent": "antidote:root",
+  "display": {
+    "icon": {
+      "id": "antidote:blessing_of_relief"
+    },
+    "title": {
+      "translate": "advancements.antidote.monk_trade.title"
+    },
+    "description": {
+      "translate": "advancements.antidote.monk_trade.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

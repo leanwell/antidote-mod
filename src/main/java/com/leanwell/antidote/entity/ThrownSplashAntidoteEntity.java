@@ -62,12 +62,19 @@ public class ThrownSplashAntidoteEntity extends ThrowableItemProjectile {
             AABB aabb = this.getBoundingBox().inflate(4.0, 2.0, 4.0);
             List<ServerPlayer> players = level.getEntitiesOfClass(ServerPlayer.class, aabb);
 
+            ServerPlayer thrower = this.getOwner() instanceof ServerPlayer sp ? sp : null;
             for (ServerPlayer player : players) {
                 if (this.distanceToSqr(player) <= 16.0) {
                     if (item instanceof SplashAntidoteItem splashAntidote) {
                         splashAntidote.applySplashCure(player, level);
+                        if (thrower != null) {
+                            com.leanwell.antidote.advancement.ModAdvancements.award(thrower, "splash_cure");
+                        }
                     } else if (item instanceof SplashCorruptAntidoteItem splashCorrupt) {
                         splashCorrupt.applySplashCurse(player, level);
+                        if (thrower != null) {
+                            com.leanwell.antidote.advancement.ModAdvancements.award(thrower, "splash_corrupt_hit");
+                        }
                     }
                 }
             }

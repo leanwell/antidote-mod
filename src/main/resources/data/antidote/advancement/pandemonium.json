@@ -1,0 +1,23 @@
+{
+  "parent": "antidote:drink_corrupt",
+  "display": {
+    "icon": {
+      "id": "antidote:corrupt_god_antidote"
+    },
+    "title": {
+      "translate": "advancements.antidote.pandemonium.title"
+    },
+    "description": {
+      "translate": "advancements.antidote.pandemonium.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "impossible": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}
