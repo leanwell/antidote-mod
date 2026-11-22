@@ -17,8 +17,8 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import java.util.List;
 
 public class WanderingMonkSpawner {
-    private static final int CHECK_INTERVAL_TICKS = 24000; // 20 minutes (1 Minecraft Day)
-    private static final float SPAWN_CHANCE = 0.25F; // 25% chance per day
+    private static final int CHECK_INTERVAL_TICKS = 2400; // Check every 2 minutes (every ~4.8s at 500 tick rate)
+    private static final float SPAWN_CHANCE = 0.50F; // 50% chance per check interval
     private static int tickCounter = 0;
 
     public static void register() {
@@ -43,7 +43,6 @@ public class WanderingMonkSpawner {
 
         RandomSource random = level.getRandom();
         if (random.nextFloat() > SPAWN_CHANCE) {
-            Antidote.LOGGER.debug("Wandering Monk daily spawn check failed roll.");
             return;
         }
 
@@ -64,14 +63,13 @@ public class WanderingMonkSpawner {
                 targetPlayer.getBoundingBox().inflate(96.0)
             );
             if (!nearbyMonks.isEmpty()) {
-                Antidote.LOGGER.debug("Wandering Monk already present near player {}", targetPlayer.getName().getString());
                 return false;
             }
         }
 
-        // Try up to 10 positions around the player (between 12 and 36 blocks away)
-        for (int attempt = 0; attempt < 16; attempt++) {
-            double distance = (force ? 6.0 : 16.0) + random.nextDouble() * 20.0;
+        // Try up to 20 positions around the player
+        for (int attempt = 0; attempt < 20; attempt++) {
+            double distance = (force ? 3.0 : 12.0) + random.nextDouble() * (force ? 6.0 : 24.0);
             double angle = random.nextDouble() * 2.0 * Math.PI;
             double targetX = targetPlayer.getX() + distance * Math.cos(angle);
             double targetZ = targetPlayer.getZ() + distance * Math.sin(angle);
@@ -81,7 +79,8 @@ public class WanderingMonkSpawner {
                 BlockPos.containing(targetX, 0, targetZ)
             );
 
-            if (level.getBlockState(targetPos.below()).isSolid()
+            // Ground must not be air, and spawn space must be clear air
+            if (!level.getBlockState(targetPos.below()).isAir()
                 && level.getBlockState(targetPos).isAir()
                 && level.getBlockState(targetPos.above()).isAir()) {
 
@@ -96,7 +95,7 @@ public class WanderingMonkSpawner {
                         SoundEvents.BELL_RESONATE, SoundSource.NEUTRAL, 1.0F, 1.0F);
 
                     Antidote.LOGGER.info("Wandering Monk spawned near {} at [{}, {}, {}]",
-                        targetPlayer.getName().getString(), targetPos.getX(), targetPos.getY(), targetPos.getZ());
+                        targetPlayer.getScoreboardName(), targetPos.getX(), targetPos.getY(), targetPos.getZ());
                     return true;
                 }
             }
