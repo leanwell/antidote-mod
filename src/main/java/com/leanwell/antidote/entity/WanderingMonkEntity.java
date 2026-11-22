@@ -1,12 +1,8 @@
 package com.leanwell.antidote.entity;
 
-import net.minecraft.ChatFormatting;
-import net.minecraft.commands.CommandSourceStack;
+import com.leanwell.antidote.item.ModItems;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -45,6 +41,8 @@ import java.util.Optional;
 
 public class WanderingMonkEntity extends WanderingTrader {
     private static final int DEFAULT_LIFESPAN_TICKS = 24000; // 20 minutes standing time
+    private boolean shouldDepartAfterTrade = false;
+    private int departureTimer = -1;
 
     public WanderingMonkEntity(EntityType<? extends WanderingTrader> entityType, Level level) {
         super(entityType, level);
@@ -77,97 +75,78 @@ public class WanderingMonkEntity extends WanderingTrader {
         offers.clear();
 
         // Trade 1: Minor Cleanse (5 Bread -> Blessing of Relief)
-        ItemStack minorBlessing = new ItemStack(Items.PAPER);
-        minorBlessing.set(DataComponents.CUSTOM_NAME, Component.literal("Blessing of Relief").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD));
         offers.add(new MerchantOffer(
             new ItemCost(Items.BREAD, 5),
             Optional.empty(),
-            minorBlessing,
+            new ItemStack(ModItems.BLESSING_OF_RELIEF),
             3, // Max 3 minor cures per monk visit
-            0,
+            1, // Reward 1 xp so notifyTrade triggers reliably
             0.0F
         ));
 
         // Trade 2: Grand Cleanse (8 Bread + 1 Honey Bottle -> Grand Enlightenment)
-        ItemStack grandBlessing = new ItemStack(Items.TOTEM_OF_UNDYING);
-        grandBlessing.set(DataComponents.CUSTOM_NAME, Component.literal("Grand Enlightenment").withStyle(ChatFormatting.LIGHT_PURPLE, ChatFormatting.BOLD));
         offers.add(new MerchantOffer(
             new ItemCost(Items.BREAD, 8),
             Optional.of(new ItemCost(Items.HONEY_BOTTLE, 1)),
-            grandBlessing,
+            new ItemStack(ModItems.GRAND_ENLIGHTENMENT),
             1, // Exactly 1 grand cure per monk visit
-            0,
+            1, // Reward 1 xp
             0.0F
         ));
     }
 
     @Override
-    protected void rewardTradeXp(MerchantOffer offer) {
+    public void notifyTrade(MerchantOffer offer) {
+        super.notifyTrade(offer);
+
+        boolean isGrand = offer.getItemCostB().isPresent()
+            && offer.getItemCostB().get().item().value() == Items.HONEY_BOTTLE;
+
         if (this.level() instanceof ServerLevel serverLevel && this.getTradingPlayer() instanceof ServerPlayer player) {
-            MinecraftServer server = serverLevel.getServer();
-            if (server != null) {
-                CommandSourceStack source = server.createCommandSourceStack().withSuppressedOutput();
-                boolean isGrand = offer.getItemCostB().isPresent()
-                    && offer.getItemCostB().get().item().value() == Items.HONEY_BOTTLE;
-
-                if (isGrand) {
-                    // Grand Cleanse: cure all 30 conditions and reset timer
-                    server.getCommands().performPrefixedCommand(source, "disability reset");
-                    server.getCommands().performPrefixedCommand(source, "disability remove " + player.getName().getString() + " all");
-
-                    // Return empty glass bottle for the consumed honey bottle
-                    ItemStack emptyBottle = new ItemStack(Items.GLASS_BOTTLE);
-                    if (!player.getInventory().add(emptyBottle)) {
-                        player.spawnAtLocation(serverLevel, emptyBottle);
-                    }
-
-                    serverLevel.sendParticles(ParticleTypes.TOTEM_OF_UNDYING,
-                        player.getX(), player.getY() + 1.0, player.getZ(),
-                        40, 0.5, 0.8, 0.5, 0.2);
-                    serverLevel.playSound(null, player.getX(), player.getY(), player.getZ(),
-                        SoundEvents.BELL_RESONATE, SoundSource.PLAYERS, 1.0F, 1.0F);
-
-                    player.sendOverlayMessage(
-                        Component.literal("All afflictions cleansed by the Monk's Grand Blessing!")
-                            .withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD)
-                    );
-
-                    // Once the grand cleansing is granted, the monk peacefully departs
-                    depart();
-                } else {
-                    // Minor Cleanse: cure 1 condition
-                    server.getCommands().performPrefixedCommand(source, "disability remove " + player.getName().getString() + " random");
-
-                    serverLevel.sendParticles(ParticleTypes.HAPPY_VILLAGER,
-                        player.getX(), player.getY() + 1.0, player.getZ(),
-                        20, 0.5, 0.6, 0.5, 0.1);
-                    serverLevel.playSound(null, player.getX(), player.getY(), player.getZ(),
-                        SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS, 0.8F, 1.2F);
-
-                    player.sendOverlayMessage(
-                        Component.literal("The Monk has blessed you and eased an affliction.")
-                            .withStyle(ChatFormatting.GREEN, ChatFormatting.BOLD)
-                    );
-
-                    // If all minor cures are used up, the monk departs
-                    if (offer.getUses() >= offer.getMaxUses()) {
-                        depart();
-                    }
+            if (isGrand) {
+                // Refund an empty glass bottle for the consumed honey bottle
+                ItemStack emptyBottle = new ItemStack(Items.GLASS_BOTTLE);
+                if (!player.getInventory().add(emptyBottle)) {
+                    player.spawnAtLocation(serverLevel, emptyBottle);
                 }
+                this.shouldDepartAfterTrade = true;
+                this.departureTimer = 100; // Depart in 5s if player stays in menu
+            } else if (offer.getUses() >= offer.getMaxUses()) {
+                this.shouldDepartAfterTrade = true;
+                this.departureTimer = 100;
+            }
+        }
+    }
+
+    @Override
+    public void setTradingPlayer(Player player) {
+        super.setTradingPlayer(player);
+        if (player == null && this.shouldDepartAfterTrade) {
+            depart();
+        }
+    }
+
+    @Override
+    public void aiStep() {
+        super.aiStep();
+        if (this.departureTimer > 0) {
+            this.departureTimer--;
+            if (this.departureTimer == 0) {
+                depart();
             }
         }
     }
 
     public void depart() {
-        if (this.level() instanceof ServerLevel serverLevel) {
+        if (this.level() instanceof ServerLevel serverLevel && !this.isRemoved()) {
             serverLevel.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE,
                 this.getX(), this.getY() + 1.0, this.getZ(),
-                30, 0.4, 0.6, 0.4, 0.05);
+                35, 0.4, 0.6, 0.4, 0.05);
             serverLevel.sendParticles(ParticleTypes.TOTEM_OF_UNDYING,
                 this.getX(), this.getY() + 1.0, this.getZ(),
-                20, 0.3, 0.5, 0.3, 0.1);
+                25, 0.3, 0.5, 0.3, 0.1);
             serverLevel.playSound(null, this.getX(), this.getY(), this.getZ(),
-                SoundEvents.BELL_RESONATE, SoundSource.NEUTRAL, 0.9F, 1.4F);
+                SoundEvents.BELL_RESONATE, SoundSource.NEUTRAL, 1.0F, 1.3F);
             this.discard();
         }
     }

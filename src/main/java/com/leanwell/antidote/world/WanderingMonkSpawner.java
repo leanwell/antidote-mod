@@ -49,20 +49,29 @@ public class WanderingMonkSpawner {
 
         // Pick a random online player in the Overworld
         ServerPlayer targetPlayer = players.get(random.nextInt(players.size()));
+        spawnMonkNear(targetPlayer, false);
+    }
 
-        // Check if a monk is already nearby
-        List<WanderingMonkEntity> nearbyMonks = level.getEntitiesOfClass(
-            WanderingMonkEntity.class,
-            targetPlayer.getBoundingBox().inflate(96.0)
-        );
-        if (!nearbyMonks.isEmpty()) {
-            Antidote.LOGGER.debug("Wandering Monk already present near player {}", targetPlayer.getName().getString());
-            return;
+    public static boolean spawnMonkNear(ServerPlayer targetPlayer, boolean force) {
+        if (!(targetPlayer.level() instanceof ServerLevel level)) {
+            return false;
+        }
+        RandomSource random = level.getRandom();
+
+        if (!force) {
+            List<WanderingMonkEntity> nearbyMonks = level.getEntitiesOfClass(
+                WanderingMonkEntity.class,
+                targetPlayer.getBoundingBox().inflate(96.0)
+            );
+            if (!nearbyMonks.isEmpty()) {
+                Antidote.LOGGER.debug("Wandering Monk already present near player {}", targetPlayer.getName().getString());
+                return false;
+            }
         }
 
-        // Try up to 10 positions around the player (between 24 and 48 blocks away)
-        for (int attempt = 0; attempt < 10; attempt++) {
-            double distance = 24.0 + random.nextDouble() * 24.0;
+        // Try up to 10 positions around the player (between 12 and 36 blocks away)
+        for (int attempt = 0; attempt < 16; attempt++) {
+            double distance = (force ? 6.0 : 16.0) + random.nextDouble() * 20.0;
             double angle = random.nextDouble() * 2.0 * Math.PI;
             double targetX = targetPlayer.getX() + distance * Math.cos(angle);
             double targetZ = targetPlayer.getZ() + distance * Math.sin(angle);
@@ -82,15 +91,16 @@ public class WanderingMonkSpawner {
                 if (level.addFreshEntity(monk)) {
                     level.sendParticles(ParticleTypes.HAPPY_VILLAGER,
                         monk.getX(), monk.getY() + 1.0, monk.getZ(),
-                        20, 0.4, 0.6, 0.4, 0.1);
+                        25, 0.4, 0.6, 0.4, 0.1);
                     level.playSound(null, monk.getX(), monk.getY(), monk.getZ(),
                         SoundEvents.BELL_RESONATE, SoundSource.NEUTRAL, 1.0F, 1.0F);
 
                     Antidote.LOGGER.info("Wandering Monk spawned near {} at [{}, {}, {}]",
                         targetPlayer.getName().getString(), targetPos.getX(), targetPos.getY(), targetPos.getZ());
-                    break;
+                    return true;
                 }
             }
         }
+        return false;
     }
 }

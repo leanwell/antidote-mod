@@ -139,6 +139,24 @@ public class AntidoteCommand {
                         )
                     )
                 )
+                .then(Commands.literal("monk")
+                    .then(Commands.literal("spawn")
+                        .executes(context -> {
+                            if (context.getSource().getPlayer() != null) {
+                                boolean spawned = com.leanwell.antidote.world.WanderingMonkSpawner.spawnMonkNear(context.getSource().getPlayer(), true);
+                                if (spawned) {
+                                    context.getSource().sendSuccess(() -> Component.literal("Wandering Monk summoned nearby!"), true);
+                                    return 1;
+                                } else {
+                                    context.getSource().sendFailure(Component.literal("Could not find a suitable surface ground position nearby."));
+                                    return 0;
+                                }
+                            }
+                            context.getSource().sendFailure(Component.literal("This command must be run by a player."));
+                            return 0;
+                        })
+                    )
+                )
             );
         });
     }

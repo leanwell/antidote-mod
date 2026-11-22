@@ -22,6 +22,8 @@ public class ModItems {
     public static SplashAntidoteItem SPLASH_GOD_ANTIDOTE;
     public static CorruptAntidoteItem CORRUPT_GOD_ANTIDOTE;
     public static SplashCorruptAntidoteItem SPLASH_CORRUPT_GOD_ANTIDOTE;
+    public static BlessingOfReliefItem BLESSING_OF_RELIEF;
+    public static GrandEnlightenmentItem GRAND_ENLIGHTENMENT;
 
     private static <T extends Item> T registerItem(String name, Function<Item.Properties, T> factory) {
         ResourceKey<Item> key = ResourceKey.create(Registries.ITEM, Antidote.id(name));
@@ -74,6 +76,10 @@ public class ModItems {
             SplashCorruptAntidoteItem item = registerItem(itemId, props -> new SplashCorruptAntidoteItem(type, props));
             SPLASH_CORRUPT_ANTIDOTES.put(type, item);
         }
+
+        // 5. Wandering Monk Sacred Offerings
+        BLESSING_OF_RELIEF = registerItem("blessing_of_relief", BlessingOfReliefItem::new);
+        GRAND_ENLIGHTENMENT = registerItem("grand_enlightenment", GrandEnlightenmentItem::new);
 
         Antidote.LOGGER.info("Registered {} Antidotes, {} Splash Antidotes, {} Corrupt Potions, and {} Splash Corrupt Potions.",
             ANTIDOTES.size(), SPLASH_ANTIDOTES.size(), CORRUPT_ANTIDOTES.size(), SPLASH_CORRUPT_ANTIDOTES.size());

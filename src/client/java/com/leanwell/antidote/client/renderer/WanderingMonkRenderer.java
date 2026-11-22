@@ -19,6 +19,10 @@ public class WanderingMonkRenderer extends MobRenderer<WanderingMonkEntity, Vill
         super(context, new VillagerModel(context.bakeLayer(ModelLayers.WANDERING_TRADER)), 0.5F);
         this.addLayer(new CustomHeadLayer<>(this, context.getModelSet(), context.getPlayerSkinRenderCache()));
         this.addLayer(new CrossedArmsItemLayer<>(this));
+        try {
+            this.getModel().getHead().getChild("hat").getChild("hat_rim").visible = false;
+        } catch (Exception ignored) {
+        }
     }
 
     @Override
